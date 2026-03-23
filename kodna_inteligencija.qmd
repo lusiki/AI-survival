@@ -1,5 +1,6 @@
 ---
-title: "Kodna Inteligencija: Temeljni Modeli, Agenti i Primjena"
+title: "Strojevi Koji Pišu Kod"
+subtitle: "Od modela do agenata i primjene"
 author: "Inženjerska zajednica za softversku inteligenciju"
 date: "`r Sys.Date()`"
 format:
