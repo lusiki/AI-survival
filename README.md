@@ -1,17 +1,17 @@
-# Kodna Inteligencija
+# Strojevi Koji Pišu Kod
 
-**Temeljni Modeli, Agenti i Primjena**
+**Od modela do agenata i primjene**
 
-Sveobuhvatni pregled suvremene kodne inteligencije na hrvatskom jeziku. Tekst pokriva cijeli životni ciklus velikih jezičnih modela za kod, od arhitektura i pretreniranja, preko evaluacije i usklađivanja, do agenata, sigurnosti i primjene u stvarnom softverskom inženjerstvu.
+Sveobuhvatni pregled suvremene kodne inteligencije na hrvatskom jeziku. Tekst pokriva cijeli životni ciklus velikih jezičnih modela za kod — od arhitektura i pretreniranja, preko evaluacije i usklađivanja, do agenata, sigurnosti i primjene u stvarnom softverskom inženjerstvu.
 
 ## Čitanje
 
 | Format | Poveznica |
 |--------|-----------|
-| **HTML** (preporučeno) | [Otvori online](https://YOUR_USERNAME.github.io/kodna-inteligencija/) |
+| **HTML** (preporučeno) | [Otvori online](https://lusiki.github.io/AI-survival/) |
 | **PDF** | [Preuzmi PDF](docs/kodna_inteligencija.pdf) |
 
-> Zamijenite `YOUR_USERNAME` s vašim GitHub korisničkim imenom nakon što omogućite GitHub Pages.
+> Zamijenite `lusiki` s vašim GitHub korisničkim imenom nakon što omogućite GitHub Pages.
 
 ## Sadržaj
 
@@ -75,7 +75,7 @@ Ovaj repozitorij koristi `docs/` mapu za GitHub Pages. Za aktiviranje:
 1. Otvorite **Settings** → **Pages** u repozitoriju
 2. Pod **Source** odaberite **Deploy from a branch**
 3. Odaberite granu `main` i mapu `/docs`
-4. Sačekajte minutu, stranica će biti dostupna na `https://YOUR_USERNAME.github.io/kodna-inteligencija/`
+4. Sačekajte minutu, stranica će biti dostupna na `https://lusiki.github.io/AI-survival/`
 
 ## Izvor
 
