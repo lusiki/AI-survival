@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hr" xml:lang="hr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Inženjerska zajednica za softversku inteligenciju">
+
+<title>Kodna Inteligencija: Temeljni Modeli, Agenti i Primjena</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="kodna_inteligencija_files/libs/clipboard/clipboard.min.js"></script>
+<script src="kodna_inteligencija_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="kodna_inteligencija_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="kodna_inteligencija_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="kodna_inteligencija_files/libs/quarto-html/popper.min.js"></script>
+<script src="kodna_inteligencija_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="kodna_inteligencija_files/libs/quarto-html/anchor.min.js"></script>
+<link href="kodna_inteligencija_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="kodna_inteligencija_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="kodna_inteligencija_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="kodna_inteligencija_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="kodna_inteligencija_files/libs/bootstrap/bootstrap-4d7f0bce1131f3e5f9547cd857cfbfc8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-intro" id="toc-sec-intro" class="nav-link active" data-scroll-target="#sec-intro">Uvod</a></li>
+  <li><a href="#sec-temeljni" id="toc-sec-temeljni" class="nav-link" data-scroll-target="#sec-temeljni">Temeljni modeli za kod</a>
+  <ul class="collapse">
+  <li><a href="#sec-opci-modeli" id="toc-sec-opci-modeli" class="nav-link" data-scroll-target="#sec-opci-modeli">Veliki jezični modeli opće namjene</a>
+  <ul class="collapse">
+  <li><a href="#sec-uspon" id="toc-sec-uspon" class="nav-link" data-scroll-target="#sec-uspon">Uspon velikih jezičnih modela</a></li>
+  <li><a href="#sec-arhitekture" id="toc-sec-arhitekture" class="nav-link" data-scroll-target="#sec-arhitekture">Arhitekture modela</a></li>
+  <li><a href="#sec-multimodalnost" id="toc-sec-multimodalnost" class="nav-link" data-scroll-target="#sec-multimodalnost">Multimodalnost</a></li>
+  <li><a href="#sec-ogranicenja" id="toc-sec-ogranicenja" class="nav-link" data-scroll-target="#sec-ogranicenja">Ograničenja velikih jezičnih modela opće namjene</a></li>
+  </ul></li>
+  <li><a href="#sec-kod-modeli" id="toc-sec-kod-modeli" class="nav-link" data-scroll-target="#sec-kod-modeli">Veliki jezični modeli za kod</a>
+  <ul class="collapse">
+  <li><a href="#sec-zatvoreni" id="toc-sec-zatvoreni" class="nav-link" data-scroll-target="#sec-zatvoreni">Zatvoreni modeli za kod</a></li>
+  <li><a href="#sec-otvoreni" id="toc-sec-otvoreni" class="nav-link" data-scroll-target="#sec-otvoreni">Otvoreni modeli za kod</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sec-evaluacija" id="toc-sec-evaluacija" class="nav-link" data-scroll-target="#sec-evaluacija">Zadaci, mjerila i evaluacija koda</a>
+  <ul class="collapse">
+  <li><a href="#sec-metrike" id="toc-sec-metrike" class="nav-link" data-scroll-target="#sec-metrike">Metrike evaluacije</a>
+  <ul class="collapse">
+  <li><a href="#sec-pass-at-k" id="toc-sec-pass-at-k" class="nav-link" data-scroll-target="#sec-pass-at-k">Pass@k</a></li>
+  <li><a href="#sec-accuracy" id="toc-sec-accuracy" class="nav-link" data-scroll-target="#sec-accuracy">Točnost (Accuracy)</a></li>
+  <li><a href="#sec-bleu-rouge" id="toc-sec-bleu-rouge" class="nav-link" data-scroll-target="#sec-bleu-rouge">BLEU i ROUGE</a></li>
+  <li><a href="#sec-tree-based" id="toc-sec-tree-based" class="nav-link" data-scroll-target="#sec-tree-based">Tree-based Metrics</a></li>
+  <li><a href="#sec-execution" id="toc-sec-execution" class="nav-link" data-scroll-target="#sec-execution">Execution-based Metrics</a></li>
+  <li><a href="#sec-embedding" id="toc-sec-embedding" class="nav-link" data-scroll-target="#sec-embedding">Embedding-based Metrics</a></li>
+  <li><a href="#sec-human-eval" id="toc-sec-human-eval" class="nav-link" data-scroll-target="#sec-human-eval">Human Evaluation</a></li>
+  </ul></li>
+  <li><a href="#sec-funkcije" id="toc-sec-funkcije" class="nav-link" data-scroll-target="#sec-funkcije">Zadaci na razini funkcije</a></li>
+  </ul></li>
+  <li><a href="#sec-usklađivanje" id="toc-sec-usklađivanje" class="nav-link" data-scroll-target="#sec-usklađivanje">Usklađivanje</a>
+  <ul class="collapse">
+  <li><a href="#sec-sft" id="toc-sec-sft" class="nav-link" data-scroll-target="#sec-sft">Nadzirano fino ugađanje (SFT)</a>
+  <ul class="collapse">
+  <li><a href="#sec-sft-single" id="toc-sec-sft-single" class="nav-link" data-scroll-target="#sec-sft-single">Jednokružno nadzirano fino ugađanje</a></li>
+  <li><a href="#sec-sft-multi" id="toc-sec-sft-multi" class="nav-link" data-scroll-target="#sec-sft-multi">Višekružno nadzirano fino ugađanje</a></li>
+  <li><a href="#sec-sft-repo" id="toc-sec-sft-repo" class="nav-link" data-scroll-target="#sec-sft-repo">SFT za zadatke na razini repozitorija</a></li>
+  <li><a href="#sec-sft-reasoning" id="toc-sec-sft-reasoning" class="nav-link" data-scroll-target="#sec-sft-reasoning">Metode bazirane na rezoniranju</a></li>
+  <li><a href="#sec-sft-strategy" id="toc-sec-sft-strategy" class="nav-link" data-scroll-target="#sec-sft-strategy">Strategije treniranja</a></li>
+  <li><a href="#sec-sft-challenges" id="toc-sec-sft-challenges" class="nav-link" data-scroll-target="#sec-sft-challenges">Izazovi u SFT-u</a></li>
+  </ul></li>
+  <li><a href="#sec-hladni-start" id="toc-sec-hladni-start" class="nav-link" data-scroll-target="#sec-hladni-start">Hladni start i destilacija podataka rezoniranja</a></li>
+  <li><a href="#sec-visejezieno" id="toc-sec-visejezieno" class="nav-link" data-scroll-target="#sec-visejezieno">Višejezično razumijevanje i generiranje koda</a></li>
+  <li><a href="#sec-multimodalno" id="toc-sec-multimodalno" class="nav-link" data-scroll-target="#sec-multimodalno">Multimodalno razumijevanje i generiranje koda</a>
+  <ul class="collapse">
+  <li><a href="#sec-multimodal-ui" id="toc-sec-multimodal-ui" class="nav-link" data-scroll-target="#sec-multimodal-ui">Generiranje korisničkog sučelja</a></li>
+  <li><a href="#sec-multimodal-web" id="toc-sec-multimodal-web" class="nav-link" data-scroll-target="#sec-multimodal-web">Web utjelovljena inteligencija</a></li>
+  <li><a href="#sec-multimodal-artifacts" id="toc-sec-multimodal-artifacts" class="nav-link" data-scroll-target="#sec-multimodal-artifacts">Generiranje artefakata softverskog inženjerstva</a></li>
+  </ul></li>
+  <li><a href="#sec-pojacano-ucenje" id="toc-sec-pojacano-ucenje" class="nav-link" data-scroll-target="#sec-pojacano-ucenje">Pojačano učenje u kodnoj inteligenciji</a>
+  <ul class="collapse">
+  <li><a href="#sec-rl-algoritmi" id="toc-sec-rl-algoritmi" class="nav-link" data-scroll-target="#sec-rl-algoritmi">Algoritmi pojačanog učenja</a></li>
+  <li><a href="#sec-rl-generation" id="toc-sec-rl-generation" class="nav-link" data-scroll-target="#sec-rl-generation">RL za generiranje koda</a></li>
+  <li><a href="#sec-rl-understanding" id="toc-sec-rl-understanding" class="nav-link" data-scroll-target="#sec-rl-understanding">RL za razumijevanje koda</a></li>
+  <li><a href="#sec-rl-swe" id="toc-sec-rl-swe" class="nav-link" data-scroll-target="#sec-rl-swe">RL za softversko inženjerstvo</a></li>
+  <li><a href="#sec-rl-security" id="toc-sec-rl-security" class="nav-link" data-scroll-target="#sec-rl-security">RL za sigurnost koda</a></li>
+  </ul></li>
+  <li><a href="#sec-rlvr" id="toc-sec-rlvr" class="nav-link" data-scroll-target="#sec-rlvr">Pojačano učenje s provjerljivim nagradama</a>
+  <ul class="collapse">
+  <li><a href="#sec-rlvr-skupovi" id="toc-sec-rlvr-skupovi" class="nav-link" data-scroll-target="#sec-rlvr-skupovi">Skupovi podataka prikladni za RLVR u kodnim zadacima</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sec-se-agenti" id="toc-sec-se-agenti" class="nav-link" data-scroll-target="#sec-se-agenti">Agenti za softversko inženjerstvo</a>
+  <ul class="collapse">
+  <li><a href="#sec-se-zivotni-ciklus" id="toc-sec-se-zivotni-ciklus" class="nav-link" data-scroll-target="#sec-se-zivotni-ciklus">Agenti kroz životni ciklus softverskog inženjerstva</a>
+  <ul class="collapse">
+  <li><a href="#sec-se-zahtjevi" id="toc-sec-se-zahtjevi" class="nav-link" data-scroll-target="#sec-se-zahtjevi">Inženjerstvo zahtjeva</a></li>
+  <li><a href="#sec-se-razvoj" id="toc-sec-se-razvoj" class="nav-link" data-scroll-target="#sec-se-razvoj">Razvoj softvera</a></li>
+  <li><a href="#sec-se-testiranje" id="toc-sec-se-testiranje" class="nav-link" data-scroll-target="#sec-se-testiranje">Testiranje softvera</a></li>
+  <li><a href="#sec-se-odrzavanje" id="toc-sec-se-odrzavanje" class="nav-link" data-scroll-target="#sec-se-odrzavanje">Održavanje softvera</a></li>
+  </ul></li>
+  <li><a href="#sec-se-opci-agenti" id="toc-sec-se-opci-agenti" class="nav-link" data-scroll-target="#sec-se-opci-agenti">Opći kodovi agenti u softverskom inženjerstvu</a></li>
+  <li><a href="#sec-se-treniranje" id="toc-sec-se-treniranje" class="nav-link" data-scroll-target="#sec-se-treniranje">Tehnike treniranja za SWE agente</a></li>
+  <li><a href="#sec-se-buduca" id="toc-sec-se-buduca" class="nav-link" data-scroll-target="#sec-se-buduca">Budući trendovi SWE agenata</a></li>
+  </ul></li>
+  <li><a href="#sec-generalisticki-agenti" id="toc-sec-generalisticki-agenti" class="nav-link" data-scroll-target="#sec-generalisticki-agenti">Kod za generalističke agente</a>
+  <ul class="collapse">
+  <li><a href="#sec-protokoli" id="toc-sec-protokoli" class="nav-link" data-scroll-target="#sec-protokoli">Kod kao protokoli interakcije</a>
+  <ul class="collapse">
+  <li><a href="#sec-koristenje-alata" id="toc-sec-koristenje-alata" class="nav-link" data-scroll-target="#sec-koristenje-alata">Korištenje alata</a></li>
+  <li><a href="#sec-mcp" id="toc-sec-mcp" class="nav-link" data-scroll-target="#sec-mcp">Protokol konteksta modela (MCP)</a></li>
+  <li><a href="#sec-koordinacija-agenata" id="toc-sec-koordinacija-agenata" class="nav-link" data-scroll-target="#sec-koordinacija-agenata">Koordinacija više agenata</a></li>
+  </ul></li>
+  <li><a href="#sec-agentske-sposobnosti" id="toc-sec-agentske-sposobnosti" class="nav-link" data-scroll-target="#sec-agentske-sposobnosti">Kod kao agentske sposobnosti</a>
+  <ul class="collapse">
+  <li><a href="#sec-razmisljanje-kodu" id="toc-sec-razmisljanje-kodu" class="nav-link" data-scroll-target="#sec-razmisljanje-kodu">Razmišljanje u kodu</a></li>
+  <li><a href="#sec-djelovanje-kodu" id="toc-sec-djelovanje-kodu" class="nav-link" data-scroll-target="#sec-djelovanje-kodu">Djelovanje u kodu</a></li>
+  <li><a href="#sec-pamcenje-kodu" id="toc-sec-pamcenje-kodu" class="nav-link" data-scroll-target="#sec-pamcenje-kodu">Pamćenje kodom</a></li>
+  </ul></li>
+  <li><a href="#sec-suelja-okruzenja" id="toc-sec-suelja-okruzenja" class="nav-link" data-scroll-target="#sec-suelja-okruzenja">Kod kao sučelja okruženja</a>
+  <ul class="collapse">
+  <li><a href="#sec-simulacijski-poligon" id="toc-sec-simulacijski-poligon" class="nav-link" data-scroll-target="#sec-simulacijski-poligon">Kod kao simulacijski poligon</a></li>
+  <li><a href="#sec-agenti-koriste-racunala" id="toc-sec-agenti-koriste-racunala" class="nav-link" data-scroll-target="#sec-agenti-koriste-racunala">Agenti za korištenje računala</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sec-sigurnost" id="toc-sec-sigurnost" class="nav-link" data-scroll-target="#sec-sigurnost">Sigurnost kodnih LLM-ova</a>
+  <ul class="collapse">
+  <li><a href="#sec-sigurnost-pretreniranje" id="toc-sec-sigurnost-pretreniranje" class="nav-link" data-scroll-target="#sec-sigurnost-pretreniranje">Sigurnost pretreniranja kodnih LLM-ova</a>
+  <ul class="collapse">
+  <li><a href="#sec-sigurnost-licenciranje" id="toc-sec-sigurnost-licenciranje" class="nav-link" data-scroll-target="#sec-sigurnost-licenciranje">Porijeklo podataka, sigurnost i usklađenost s licencama</a></li>
+  <li><a href="#sec-sigurnost-čišćenje" id="toc-sec-sigurnost-čišćenje" class="nav-link" data-scroll-target="#sec-sigurnost-čišćenje">Revizija i čišćenje podataka za treniranje</a></li>
+  <li><a href="#sec-sigurnost-transformacije" id="toc-sec-sigurnost-transformacije" class="nav-link" data-scroll-target="#sec-sigurnost-transformacije">Robusnost protiv neprijateljskih transformacija koda</a></li>
+  </ul></li>
+  <li><a href="#sec-sigurnost-posttreniranje" id="toc-sec-sigurnost-posttreniranje" class="nav-link" data-scroll-target="#sec-sigurnost-posttreniranje">Sigurnost posttreniranja kodnih LLM-ova</a>
+  <ul class="collapse">
+  <li><a href="#sec-sigurnost-podatci" id="toc-sec-sigurnost-podatci" class="nav-link" data-scroll-target="#sec-sigurnost-podatci">Podatci kao temelj za sigurnost</a></li>
+  <li><a href="#sec-sigurnost-sft" id="toc-sec-sigurnost-sft" class="nav-link" data-scroll-target="#sec-sigurnost-sft">Sigurnosno nadzirano fino ugađanje</a></li>
+  <li><a href="#sec-sigurnost-rl" id="toc-sec-sigurnost-rl" class="nav-link" data-scroll-target="#sec-sigurnost-rl">Sigurnosno usklađivanje kodiranja putem pojačanog učenja</a></li>
+  </ul></li>
+  <li><a href="#sec-sigurnost-crveni-tim" id="toc-sec-sigurnost-crveni-tim" class="nav-link" data-scroll-target="#sec-sigurnost-crveni-tim">Tehnike crvenog tima za kodne LLM-ove</a>
+  <ul class="collapse">
+  <li><a href="#sec-sigurnost-upiti" id="toc-sec-sigurnost-upiti" class="nav-link" data-scroll-target="#sec-sigurnost-upiti">Manipulacija na razini upita</a></li>
+  <li><a href="#sec-sigurnost-semantika" id="toc-sec-sigurnost-semantika" class="nav-link" data-scroll-target="#sec-sigurnost-semantika">Semantička i kontekstualna manipulacija</a></li>
+  <li><a href="#sec-sigurnost-agenti-napadi" id="toc-sec-sigurnost-agenti-napadi" class="nav-link" data-scroll-target="#sec-sigurnost-agenti-napadi">Manipulacija agentskog tijeka rada</a></li>
+  </ul></li>
+  <li><a href="#sec-sigurnost-ublazavanje" id="toc-sec-sigurnost-ublazavanje" class="nav-link" data-scroll-target="#sec-sigurnost-ublazavanje">Strategije ublažavanja za rizike kodiranja</a>
+  <ul class="collapse">
+  <li><a href="#sec-sigurnost-okruženja" id="toc-sec-sigurnost-okruženja" class="nav-link" data-scroll-target="#sec-sigurnost-okruženja">Temelji u sigurnim okruženjima za izvršavanje</a></li>
+  <li><a href="#sec-sigurnost-validacija" id="toc-sec-sigurnost-validacija" class="nav-link" data-scroll-target="#sec-sigurnost-validacija">Proaktivna obrana i validacija prije izvršavanja</a></li>
+  <li><a href="#sec-sigurnost-nadzor" id="toc-sec-sigurnost-nadzor" class="nav-link" data-scroll-target="#sec-sigurnost-nadzor">Nadzor u izvršavanju i utemeljenje namjere</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sec-recepti" id="toc-sec-recepti" class="nav-link" data-scroll-target="#sec-recepti">Recepti za treniranje</a>
+  <ul class="collapse">
+  <li><a href="#sec-distribuirani-okviri" id="toc-sec-distribuirani-okviri" class="nav-link" data-scroll-target="#sec-distribuirani-okviri">Distribuirani okviri za treniranje</a></li>
+  <li><a href="#sec-pretreniranje-smjernice" id="toc-sec-pretreniranje-smjernice" class="nav-link" data-scroll-target="#sec-pretreniranje-smjernice">Smjernice za pretreniranje</a></li>
+  <li><a href="#sec-sft-smjernice" id="toc-sec-sft-smjernice" class="nav-link" data-scroll-target="#sec-sft-smjernice">Smjernice za fino ugađanje</a></li>
+  <li><a href="#sec-rl-smjernice" id="toc-sec-rl-smjernice" class="nav-link" data-scroll-target="#sec-rl-smjernice">Smjernice za pojačano učenje</a></li>
+  </ul></li>
+  <li><a href="#sec-primjena" id="toc-sec-primjena" class="nav-link" data-scroll-target="#sec-primjena">Veliki jezični modeli za kod u primjeni</a>
+  <ul class="collapse">
+  <li><a href="#sec-ide-helperi" id="toc-sec-ide-helperi" class="nav-link" data-scroll-target="#sec-ide-helperi">Razvojni pomoćnici integrirani u IDE</a></li>
+  <li><a href="#sec-cloud-platforme" id="toc-sec-cloud-platforme" class="nav-link" data-scroll-target="#sec-cloud-platforme">Platforme za kodiranje u oblaku</a></li>
+  <li><a href="#sec-terminal-agenti" id="toc-sec-terminal-agenti" class="nav-link" data-scroll-target="#sec-terminal-agenti">Autonomni agenti bazirani na terminalu</a></li>
+  <li><a href="#sec-popravak-koda" id="toc-sec-popravak-koda" class="nav-link" data-scroll-target="#sec-popravak-koda">Aplikacije za popravak i verifikaciju koda</a></li>
+  <li><a href="#sec-pr-pregled" id="toc-sec-pr-pregled" class="nav-link" data-scroll-target="#sec-pr-pregled">Pregled zahtjeva za spajanje i osiguranje kvalitete</a></li>
+  </ul></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference">Reference</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="kodna_inteligencija.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Kodna Inteligencija: Temeljni Modeli, Agenti i Primjena</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Inženjerska zajednica za softversku inteligenciju </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Invalid Date</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sec-intro" class="level1">
+<h1>Uvod</h1>
+<p>Dvadeset devetog listopada 1969. godine, u laboratoriju UCLA-a u Los Angelesu, mladi istraživač po imenu Charley Kline sjeo je za računalni terminal i pokušao poslati jednu jedinu riječ drugom računalu udaljenom oko četiri stotine kilometara, na Stanfordu. Riječ je bila <em>login</em>. Sustav se srušio nakon dva slova. Ekran je pokazao samo <em>lo</em>. Ipak, ta dva slova putovala su kroz telefonske linije poput prvih koraka djeteta koje još ne zna da će jednog dana pretrčati maraton. Pet i pol desetljeća kasnije, strojevi ne samo da šalju poruke, nego pišu softver, ispravljaju greške u tuđem kodu i sudjeluju u arhitektonskim odlukama koje oblikuju digitalne proizvode kojima se koriste milijarde ljudi. Put od ta dva slova do današnjeg stanja stvari nije bio linearan, ali je bio neizbježan.</p>
+<p>Zamislite tvornicu u kojoj radnici ne sastavljaju dijelove rukama, nego riječima. Jedan radnik kaže <em>napravi dugme koje mijenja boju kada ga korisnik pritisne</em>, a stroj na drugoj strani tvornice proizvede gotov komad softvera koji radi točno to. Upravo se to događa danas kada veliki jezični modeli (engl. <em>Large Language Models</em> ili LLM) prevode ljudski jezik u izvršivi kod. Ova analogija s tvornicom nije pretjerana. Alati poput <a href="https://github.com/features/copilot">GitHub Copilota</a>, <a href="https://cursor.com">Cursora</a>, <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Codea</a> i CodeWhisperera funkcioniraju upravo tako, pretvarajući opis zadatka napisan običnim riječima u funkcionalne programe koje računalo može izvršiti. Transformacija je toliko duboka da mijenja sam pojam programiranja, jer više nije potrebno poznavati svaku sintaktičku nijansu programskog jezika da biste stvorili nešto korisno.</p>
+<p>Zašto bi vas to trebalo zanimati? Zato što se evolucija razvoja softvera može podijeliti u jasne epohe, a mi upravo živimo na prijelazu iz jedne u drugu. Prva epoha trajala je od šezdesetih do osamdesetih godina dvadesetog stoljeća i u njoj su programeri ručno pisali svaki redak koda. Druga epoha donijela je integrirane razvojne alate poput IDE-eva i sustava za upravljanje verzijama koji su učinili ručni rad produktivnijim. Treća epoha, od devedesetih do dvadesetih godina ovog stoljeća, obilježena je razvojnim okvirima (engl. <em>frameworks</em>) koji su apstrahirali rutinske zadatke. No četvrta epoha, ona u kojoj se nalazimo od otprilike 2020. godine, radikalno je drugačija. U njoj umjetna inteligencija ne samo da pomaže programerima, nego počinje samostalno obavljati značajne dijelove razvojnog procesa. I upravo je to epoha o kojoj govori ovaj tekst.</p>
+<p>Krajolik suvremenih modela za kodiranje otkriva stratešku podjelu između dvaju pristupa. S jedne strane nalaze se modeli opće namjene poput GPT serije, Claudea i LLaMA obitelji, koji nude širinu jer su trenirani na golemim količinama prirodnog jezika zajedno s programskim kodom. S druge strane stoje specijalizirani modeli za kod poput <a href="https://huggingface.co/bigcode/starcoder">StarCodera</a>, Code LLaMA-e, <a href="https://github.com/deepseek-ai/DeepSeek-Coder">DeepSeek-Codera</a> i QwenCodera, koji postižu vrhunske rezultate na mjerilima specifičnima za programiranje zahvaljujući ciljanom pretreniranju na programerskim podatcima. Poboljšanje performansi, od jednoznamenkastih postotaka do više od 95% uspješnosti na standardiziranim testovima poput HumanEvala, odražava i algoritmske inovacije i dublja uvida u strukturu samog koda <span class="citation" data-cites="chen2021codex">Chen i ostali (<a href="#ref-chen2021codex" role="doc-biblioref">2021</a>)</span>.</p>
+<p>Usprkos intenzivnom istraživačkom naporu i brzoj komercijalnoj primjeni, u literaturi postoji praznina između širine inovacija i dubine sustavne analize. Postojeći pregledi uglavnom su pristupali panoramski, pokrivajući široke kategorije zadataka ili se fokusirajući na starije generacije modela, dok suvremeni napredci ostaju nedovoljno sintetizirani. Posebno su nedovoljno istražene sofisticirane strategije kuriranja podataka, metode usklađivanja ponašanja modela s namjerama programera, napredne paradigme poticanja (engl. <em>prompting</em>) uključujući lančano rezoniranje (engl. <em>chain-of-thought</em>) <span class="citation" data-cites="wei2022cot">Wei i ostali (<a href="#ref-wei2022cot" role="doc-biblioref">2022</a>)</span>, te pojava autonomnih agenata za kodiranje sposobnih za višekorakno rješavanje problema. Ovaj tekst nastoji upravo tu prazninu popuniti, nudeći sustavni pregled cjelokupnog životnog ciklusa modela za kodiranje, od početnog prikupljanja i čišćenja podataka, preko pretreniranja i arhitektonskih inovacija, do naprednih metoda finoštimanja i primjene u stvarnom softverskom inženjerstvu. Svrha nije pretvoriti vas u stručnjake za strojno učenje, ali jest omogućiti vam da razumijete koncept dovoljno duboko da u profesionalnom razgovoru možete postaviti pravo pitanje u pravom trenutku.</p>
+</section>
+<section id="sec-temeljni" class="level1">
+<h1>Temeljni modeli za kod</h1>
+<p>Prije nego što zaronimo u specijalizirane modele za programski kod, nužno je razumjeti tlo na kojem su izgrađeni. Veliki jezični modeli opće namjene su temelj, osnova na kojoj počiva sve što slijedi. Zamislite da gradite kuću. Temelj sam po sebi ne izgleda posebno, to su beton i armaturu zakopani u zemlju, i nitko ga ne fotografira za naslovnicu arhitektonskog časopisa. Ali bez njega, ni najljepša fasada ne može stajati. Veliki jezični modeli opće namjene upravo su taj temelj za sve specijalizirane sustave koji generiraju, analiziraju i popravljaju kod.</p>
+<section id="sec-opci-modeli" class="level2">
+<h2 class="anchored" data-anchor-id="sec-opci-modeli">Veliki jezični modeli opće namjene</h2>
+<section id="sec-uspon" class="level3">
+<h3 class="anchored" data-anchor-id="sec-uspon">Uspon velikih jezičnih modela</h3>
+<p>Prije nego što su transformeri stupili na scenu, napredak u umjetnoj inteligenciji bio je rascjepkan. Postojali su specijalizirani sustavi za strojno prevođenje, zasebni cjevovodi za dijalog, posebni motori za sintezu programa. Svaki je radio pristojno u svojoj niši, ali nijedan nije mogao izaći iz nje. Zamislite grad u kojem svaka četvrt ima vlastitu željezničku prugu, ali nijedna pruga nije spojena s drugom. Transformerska arhitektura, predstavljena 2017. godine u čuvenom radu <em>Attention Is All You Need</em> <span class="citation" data-cites="vaswani2017attention">Vaswani i ostali (<a href="#ref-vaswani2017attention" role="doc-biblioref">2017</a>)</span>, bila je upravo ta spojna pruga. Umjesto da gradi zasebne sustave za svaki zadatak, transformersko pretreniranje i prijenos znanja ujedinili su te raznorodne niti u jedinstven, skalabilan okvir koji se mogao prilagoditi različitim zadacima i modalitetima.</p>
+<p>Zakoni skaliranja pokazali su nešto važno. Sa svakim povećanjem broja parametara modela, količine podataka i računalne snage, performanse su rasle na predvidljiv način. Ali najznačajnije su takozvane emergentne sposobnosti, vještine koje se pojavljuju tek na određenim skalama, kao da model na nekom pragu veličine naglo nauči nešto što manje verzije naprosto ne mogu. Doduše, recentna istraživanja ukazuju da bi dio tih emergentnih sposobnosti mogao biti artefakt načina mjerenja, što daje nijansiraniju sliku o dobrobitima puke veličine. No činjenica ostaje. Modeli su, rastom, stekli dvije posebno značajne klase sposobnosti koje nikad nisu bile eksplicitno programirane.</p>
+<p>Prva je sposobnost kodiranja. Modeli opće namjene pokazali su iznenađujuću vještinu u generiranju programskog koda, što je kataliziralo razvoj modela eksplicitno treniranih na kodu. OpenAI-jev Codex demonstrirao je funkcionalno generiranje koda iz opisa na prirodnom jeziku i uveo standardizirane načine evaluacije poput HumanEvala. Paralelno, DeepMindov AlphaCode pokazao je da kombinacija masovnog uzorkovanja i filtriranja može dostići razinu natjecateljskog programiranja približnu medijalnom ljudskom natjecatelju u simuliranim Codeforces uvjetima <span class="citation" data-cites="li2023alphacode">Y. Li i ostali (<a href="#ref-li2023alphacode" role="doc-biblioref">2022</a>)</span>. Ovi rezultati utvrdili su da jezično modeliranje i sinteza koda dijele strukturu koju je moguće iskoristiti, čineći LLM-ove odmah upotrebljivima za zadatke od generiranja predložaka koda do rješavanja algoritmskih problema.</p>
+<p>Druga emergentna sposobnost je važnija. Kada su LLM-ovi opremljeni vanjskim alatima, memorijom i zatvorenom petljom rezoniranja, počeli su nalikovati na donositelje odluka, a ne na statičke prediktore. Metode poput ReActa <span class="citation" data-cites="yao2023react">Yao i ostali (<a href="#ref-yao2023react" role="doc-biblioref">2023</a>)</span> isprepliću tragove rezoniranja s akcijama u okruženju kako bi planirali, prikupljali informacije i ispravljali smjer. Komplementarni pristupi poput Toolformera <span class="citation" data-cites="schick2023toolformer">Schick i ostali (<a href="#ref-schick2023toolformer" role="doc-biblioref">2024</a>)</span> pokazali su da modeli mogu naučiti kada i kako pozivati vanjske programska sučelja (engl. <em>API</em>) na samoupravljan način, poboljšavajući pouzdanost na zadacima koji profitiraju od kalkulatora, pretraživanja ili dohvaćanja podataka. Agenti za softversko inženjerstvo (engl. <em>SWE agents</em>) postigli su zapažen napredak.</p>
+<p>Zajedno gledano, ovi razvoji označavaju čist prekid s uskim, zadatku specifičnim sustavima i pomak prema općem sustavu za kodiranje koji pruža jedinstvenu podlogu za jezik, programiranje i rezoniranje posredovano alatima. No upravo ta širina otkriva i granice u točnosti, sigurnosti i pouzdanosti na razini cijelih sustava u profesionalnim softverskim okruženjima. I upravo te granice motiviraju specijalizirane modele za kodiranje i agente kojima se bavi ostatak ovog teksta.</p>
+</section>
+<section id="sec-arhitekture" class="level3">
+<h3 class="anchored" data-anchor-id="sec-arhitekture">Arhitekture modela</h3>
+<p>Uz rast u razmjeru i količini podataka, inovacije u arhitekturi modela bile su jedan od ključnih stupova brzog napretka velikih jezičnih modela. Zamislite tvorničku halu u kojoj rade stotine radnika. U početku, svaki radnik sudjeluje u svakom koraku proizvodnje, što je pouzdano ali skupo. To je način na koji funkcioniraju gusti modeli (engl. <em>dense models</em>). Zatim netko dolazi na ideju da se radnici specijaliziraju, svaki za određeni tip zadatka, i da se na pokretnu traku pozivaju samo oni koji su za taj konkretni korak najpotrebniji. To je načelo mješavine stručnjaka (engl. <em>Mixture of Experts</em> ili MoE). A onda se pojavljuju i potpuno drugačije ideje organizacije, od rekurentnih linija do difuzijskih postupaka koji materijal oblikuju postupnim dotjerivanjem umjesto sekvencijalnim slaganjem. Evolucija arhitektura upravo je priča o tim različitim načinima organizacije rada.</p>
+<p><strong>Gusti modeli.</strong> Transformerski model ostaje temelj modernih LLM-ova, koristeći guste arhitekture u kojima svaki parametar sudjeluje u obradi svakog tokena. Ovaj dizajn, izgrađen na slojevima mehanizma pažnje i unaprijednih mreža, omogućio je napredak u hvatanju dugoročnih ovisnosti i u zadacima obrade prirodnog jezika. Modeli poput LLaMA obitelji i njezinih nasljednika pokazali su da otvoreni modeli visoke kvalitete mogu konkurirati vlasničkim sustavima, skalirajući se od 7 milijardi do 70 milijardi parametara. Serija GLM proširila je guste arhitekture u dvojezične i višejezične domene, dok je obitelj Qwen naglasila snažne performanse u razumijevanju i generiranju sa skalabilnim gustim modelima. Mistral je istaknuo kako pažljivo inženjerstvo, poput grupirane pažnje za upite (engl. <em>grouped query attention</em> ili GQA), može postići konkurentne rezultate s manje parametara. Gusti modeli su računski zahtjevni, ali nastavljaju evoluirati prema većoj učinkovitosti i svestranosti.</p>
+<p><strong>Mješavina stručnjaka (MoE).</strong> MoE proširuje kapacitet modela kroz uvjetno računanje bez proporcionalnog povećanja aktivirane računalne snage. Svaki token usmjerava se na mali broj stručnjaka, obično najsposobnijih <em>k</em> stručnjaka, za izračun proslijeđivanja, zamjenjujući rijetku aktivaciju za veći efektivni kapacitet. U zajednici otvorenog koda, serija Mixtral učinila je usmjeravanje na dva stručnjaka de facto inženjerskim standardom. Varijanta 8×7B demonstrirala je da aktiviranje manje parametara može nadmašiti veće guste modele, a naknadna 8×22B dodatno je pomaknula granice sposobnosti i propusnosti. Serija Qwen uvela je MoE varijante kroz svoje verzije 1.5, 2.5 i 3. DeepSeek je sistematizirao učinkovit dizajn rijetkih stručnjaka i višeglave latentne pažnje (engl. <em>Multi-head Latent Attention</em> ili MLA) u svojoj V2/V3 seriji, gdje V2 ima 236 milijardi ukupnih parametara s oko 21 milijardom aktiviranih, a V3 ima 671 milijardu ukupnih parametara s oko 37 milijardi aktiviranih <span class="citation" data-cites="deepseekv3">DeepSeek-AI (<a href="#ref-deepseekv3" role="doc-biblioref">2024</a>)</span>. DeepSeek R1 nadalje je nadogradio V3-Base pojačanim učenjem za poboljšanja lančanog rezoniranja <span class="citation" data-cites="deepseekr1">DeepSeek-AI (<a href="#ref-deepseekr1" role="doc-biblioref">2025</a>)</span>. GLM-4.5 primijenio je MoE velikog razmjera, integriravši hibridne načine rezoniranja u jedinstven model za kodiranje, rezoniranje i agentske primjene. Cijela LLaMA-4 serija također usvaja MoE arhitekturu. Ukratko, MoE je postao jedna od glavnih arhitektura za optimizaciju omjera efektivnog kapaciteta i u praksi sinergijski djeluje s rukovanjem dugim kontekstima, kompresijom KV predmemorije i predikcijom više tokena, tvoreći učinkovitu paradigmu za velika produkcijska okruženja.</p>
+<p><strong>Rekurentni modeli.</strong> Arhitekture rekurentnog tipa ponovno posjećuju sekvencijalno modeliranje kako bi smanjile memoriju i latenciju zadržavajući paralelno treniranje. RWKV spaja paralelizabilno treniranje nalik transformerima s rekurentnim zaključivanjem, aktivirajući stanje konstantne veličine u svakom koraku tako da dekodiranje skalira linearno i može se približiti kvaliteti transformera pri sličnim veličinama. Retentivne mreže (engl. <em>RetNet</em>) zamjenjuju pažnju operatorom zadržavanja koji podržava potpuno paralelno treniranje i rekurentno ili blokovno rekurentno zaključivanje, dajući obradbu dugih sekvenci u linearnom vremenu sa snažnim rezultatima jezičnog modeliranja. Mamba <span class="citation" data-cites="gu2024mamba">Gu i Dao (<a href="#ref-gu2024mamba" role="doc-biblioref">2024</a>)</span> uvodi selektivne modele prostora stanja čiji parametri ovise o ulazu, omogućujući dekodiranje u linearnom vremenu i konkurentne performanse na jezičnim zadacima uz visoku propusnost. Srodni operatori dugog dosega poput Hyene koriste implicitno parametrizirane duge konvolucije s kontrolnim mehanizmima kako bi postigli kvalitetu pažnje uz subkvadratni trošak, što omogućuje duljine konteksta daleko iznad standardnih režima pažnje. Dodatno, DeltaNet uvodi hardverski učinkovit način za paralelizaciju linearnih transformera, dok Gated DeltaNet kombinira kontrolne mehanizme s delta ažuriranjem za bolje upravljanje memorijom, dosljedno nadmašujući Mambu-2 i DeltaNet na dugokontekstnim zadacima.</p>
+<p><strong>Modeli bazirani na difuziji.</strong> Difuzijski jezični modeli zamjenjuju dekodiranje slijeva nadesno iterativnim koracima odnošumljivanja koji pročišćavaju bučnu sekvencu u tečan tekst, omogućujući globalnu kontrolu nad atributima i strukturom. Temeljni radovi na diskretnoj difuziji formalizirali su procese korupcije i odnošumljivanja izravno u prostoru tokena. Nedavno su se pojavili veći napori koji guraju difuzijske jezične modele izvan malih prototipova. LLaDA trenira difuzijske modele za jezik od nule putem rasporeda maskiranja i obrnutog odnošumljivanja s običnim transformerom, postižući konkurentnost s autoregresivnim baznim modelima slične veličine. Na komercijalnoj strani, Mercury Coder oblikuje kodiranje kao paralelno višetokensko odnošumljivanje i reklamira znatne prednosti u brzini u odnosu na autoregresivne modele. Gemini Diffusion istražuje difuziju za generiranje teksta, signalizirajući kontinuirani interes za neautoregresivno dekodiranje na produkcijskoj skali. Iako difuzijski jezični modeli nude mogućnost kontrole i paralelizabilne ciljeve treniranja, obično zahtijevaju mnogo koraka uzorkovanja, što motivira istraživanje bržih uzorkivača i hibridnih autoregresivno-difuzijskih dekodera.</p>
+<p><strong>Hibridne arhitekture.</strong> Hibridne arhitekture isprepliću komplementarne operatore sekvenci, obično kombinirajući transformersku pažnju s blokovima prostora stanja ili rekurentnim blokovima, često uz MoE unaprijedne mreže, kako bi u jednom skupu uskladili kvalitetu, duljinu konteksta i propusnost. Jamba je kanonički primjer koji isprepliće slojeve transformera i Mambe s MoE, postižući visoku propusnost na dugim kontekstima zadržavajući snažne performanse. U Qwen liniji, Qwen3-Next usvaja hibridni dizajn pažnje koji miješa linearne operatore u stilu Gated DeltaNeta s kontroliranom pažnjom i rijetkom aktivacijom MoE. DeepSeek V3 uvodi MLA s DeepSeek-MoE za učinkovito treniranje i zaključivanje. Hibridne arhitekture postale su standard za moderan razvoj velikih modela.</p>
+<p>Arhitektura modela diversificirala se od univerzalnog gustog transformera prema alatnici koja uključuje rijetke stručnjake, rekurentnost i prostor stanja, difuziju i učinkovite mehanizme pažnje. Ovi izbori omogućuju praktičarima da balansiraju kapacitet, latenciju i duljinu konteksta, pružajući sposobnosti koje podupiru i opće LLM-ove i specijalizirane sustave za kodiranje.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Za vašu profesionalnu praksu: Kada na sastanku netko kaže da prebacuju infrastrukturu na MoE arhitekturu ili da razmatraju Mambu za zaključivanje u stvarnom vremenu, razumjet ćete da se radi o temeljno različitim načinima organiziranja računanja unutar modela, svaki s vlastitim prednostima u trošku, brzini i kvaliteti.</p>
+</div>
+</div>
+</section>
+<section id="sec-multimodalnost" class="level3">
+<h3 class="anchored" data-anchor-id="sec-multimodalnost">Multimodalnost</h3>
+<p>Do sada smo govorili o modelima koji rade s tekstom, bilo da je to prirodni jezik ili programski kod. Ali stvarni svijet razvoja softvera nije čisto tekstualan. Zamislite da radite na mobilnoj aplikaciji i dizajner vam pošalje skicu korisničkog sučelja, dijagram arhitekture sustava ili snimku zaslona postojeće stranice s napomenom <em>napravi nešto ovako</em>. U tom trenutku, model koji razumije samo tekst nalikuje kuharu koji može čitati recepte, ali je slijep. Može raditi s riječima, ali ne vidi što je na tanjuru.</p>
+<p>Upravo tu nastupa multimodalnost. Modeli za kodiranje trebaju obrađivati vizualne informacije poput dijagrama, snimaka zaslona i elemenata korisničkog sučelja da bi razumjeli i generirali kod u stvarnim scenarijima. Ove sposobnosti čine temelj za radne tijekove orijentirane na kod. Najnovije generacije modela, poput Gemini serije i Claudea, integrirale su vizualno razumijevanje izravno u svoju arhitekturu, što znači da mogu primiti sliku korisničkog sučelja i generirati HTML ili CSS koji ga reproducira, ili analizirati dijagram toka podataka i predložiti odgovarajuću arhitekturu koda.</p>
+<p>Zašto bi vas multimodalnost trebala zanimati? Zamislite budući radni dan u kojem projekt menadžer dijeli dijagram u Figmi i pita može li AI izravno iz tog dijagrama generirati početnu strukturu koda. Ili zamislite da testirate aplikaciju, napravite snimku zaslona greške i tražite od modela da dijagnosticira problem na temelju onoga što vidi. To više nije znanstvena fantastika. To je smjer u kojem se ova tehnologija kreće, i razumijevanje multimodalnosti ključno je za razumijevanje zašto sljedeća generacija alata za kodiranje izgleda upravo onako kako izgleda.</p>
+</section>
+<section id="sec-ogranicenja" class="level3">
+<h3 class="anchored" data-anchor-id="sec-ogranicenja">Ograničenja velikih jezičnih modela opće namjene</h3>
+<p>Sve što smo dosad opisali moglo bi stvoriti dojam da su veliki jezični modeli opće namjene rješenje za svaki problem u razvoju softvera. To bi bio opasan zaključak. Zamislite liječnika opće prakse. On zna dovoljno o svakom organu da prepozna simptome, ali kada trebate operaciju srca, tražite kardiokirurga. Veliki jezični modeli opće namjene su upravo taj liječnik opće prakse. Njihova širina je impresivna, ali dubina, robusnost i usklađenost s domenom često nisu dovoljne za profesionalno softversko inženjerstvo. Pogledajmo konkretno gdje se javljaju pukotine.</p>
+<p><strong>Specijalizacija i točnost.</strong> Usprkos svojoj širini, modeli opće namjene često nemaju dubinu potrebnu za profesionalno softversko inženjerstvo. Mogu proizvesti kod koji povrinski izgleda ispravno, ali ne zadovoljava domenske ograničice poput suptilnih ugovora programskih sučelja (engl. <em>API contracts</em>), sigurnosnih politika, i teško održavaju invarijante kroz velike sustave. Dokazi iz evaluacija na razini čitavih repozitorija dodatno ukazuju da rješavanje problema iz stvarnog svijeta ostaje izazovno čak i za snažne modele i agentske alatne lance.</p>
+<p><strong>Sigurnost i pouzdanost.</strong> Rastući korpus empirijskih studija pokazuje da funkcionalno ispravan kod iz općih LLM-ova može i dalje biti nesiguran. Evaluacije velikog razmjera koje uključuju više od stotinu modela kroz osamdeset zadataka izvješćuju da otprilike 45% generacija sadrži poznate ranjivosti, s malo poboljšanja kod novijih ili većih modela. Razmislite o tome. Gotovo polovica koda koji ovi modeli proizvode može sadržavati sigurnosne propuste. To je kao da vam građevinski inženjer kaže da svaki drugi most koji dizajnira ima strukturalni problem. Ne bi vas utješila činjenica da most izgleda lijepo.</p>
+<p><strong>Razumijevanje na razini repozitorija.</strong> Čak i s proširenim kontekstnim prozorima, opći LLM-ovi ne koriste robustno vrlo duge ulaze. Performanse se pogoršavaju kada se relevantna informacija nalazi u sredini konteksta umjesto blizu njegovih krajeva, a mjerila na razini repozitorija koja pokrivaju zadatke poput višedatotečnog dovršavanja, dohvata i uređivanja otkrivaju ustrajne poteškoće u praćenju međudatotečnih ovisnosti i globalnom rezoniranju. Zamislite da čitate roman od tisuću stranica, ali zaboravljate sve što je pisalo na sredini knjige. Upravo to se događa velikim jezičnim modelima kada obrađuju velike baze koda.</p>
+<p><strong>Multimodalno trenje.</strong> Opći multimodalni modeli pružaju korisnu percepciju za snimke zaslona, dokumente i dijagrame, ali finogranulirana hijerarhija korisničkog sučelja i semantika interakcije ostaju slabe točke. Nedavne analize razumijevanja grafičkih korisničkih sučelja (engl. <em>GUI</em>) bilježe da postojeći sustavi često specijaliziraju uske podzadatke umjesto da postižu holistično i dosljedno razumijevanje zaslona, što ograničuje stabilne prijelaze od percepcije do akcije u stvarnim primjenama.</p>
+<p><strong>Agentska ograničenja.</strong> Za postavke proširene alatima, evaluirani agenti i dalje zakazuju zbog krhkog dugoročnog rezoniranja, donošenja odluka i praćenja uputa. Sustavne evaluacije ističu značajne praznine kroz interaktivna okruženja i domene, a nove dijagnostike dokumentiraju halucinacije s alatima, poput pogrešnog odabira alata, netočnog vremena pozivanja ili fabriciranih rezultata alata. Ove studije nadalje predlažu usklađivanje pouzdanosti kako bi se ublažili takvi problemi.</p>
+<p>Ukupno gledano, širina bez usklađenosti s domenom vodi do praznina u dubini, pouzdanosti i koherentnosti na razini sustava. Rješavanje ovih ograničenja motivira specijalizirano pretreniranje za kodiranje, kuriranje podataka, sigurnosno usklađivanje i evaluaciju, s modelima optimiziranima da djeluju kao stručni programeri.</p>
+</section>
+</section>
+<section id="sec-kod-modeli" class="level2">
+<h2 class="anchored" data-anchor-id="sec-kod-modeli">Veliki jezični modeli za kod</h2>
+<p>U prethodnom potpoglavlju upoznali smo velike jezične modele opće namjene, one koji znaju mnogo o svemu, ali nisu specijalisti ni za što. Sada prelazimo na njihove specijalizirane srodnike, modele koji su od samog početka dizajnirani, trenirani i optimizirani za pisanje, razumijevanje i popravljanje programskog koda. Razlika između ta dva svijeta najlakše se razumije sljedećom analogijom. Zamislite dva kuhara. Prvi je talentirani amater koji kuha odlična jela iz različitih kuhinja i uvijek napravi nešto ugodno za nepce. Drugi je profesionalni slastičar koji je proveo deset godina usavršavajući isključivo croissante. Obojica su vješti u kuhinji, ali kada trebate savršeni croissant za pariški bistro, znate koga ćete pozvati. Specijalizirani modeli za kod upravo su ti slastičari. Oni nisu nužno bolji u pisanju ljubavnih pisama ili objašnjavanju kvantne fizike, ali kada im date zadatak da napišu funkciju u Pythonu, poprave grešku u JavaScriptu ili refaktoriraju cijeli repozitorij, njihova izvedba nadmašuje generaliste jer je svaki korak njihovog treniranja bio usmjeren prema tom cilju.</p>
+<section id="sec-zatvoreni" class="level3">
+<h3 class="anchored" data-anchor-id="sec-zatvoreni">Zatvoreni modeli za kod</h3>
+<p>Zatvoreni modeli za kod evoluirali su od osnovnog generiranja koda do agentskih sustava sa sposobnostima na razini cijelih repozitorija. Njihova povijest počinje u laboratorijima nekolicine tvrtki koje su imale resurse za treniranje golemih modela, a završava u integriranim razvojnim okruženjima na kojima hoje rade milijuni programera diljem svijeta.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model Obitelj</th>
+<th>Ključne Inovacije</th>
+<th>Trenutni Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>GPT serija</strong> (OpenAI)</td>
+<td>Pretreniranje s malo uzoraka, Codex, multimodalnost, o-serija s promišljanjem</td>
+<td>GPT-5 s vrhunskim rezultatima</td>
+</tr>
+<tr class="even">
+<td><strong>PaLM/Gemini</strong> (Google)</td>
+<td>Nativna multimodalnost, dugi konteksti, rijetki stručnjaci</td>
+<td>Gemini 2.5 za kodne primjene</td>
+</tr>
+<tr class="odd">
+<td><strong>Claude</strong> (Anthropic)</td>
+<td>Ustavna AI, dugi konteksti, agentske sposobnosti, korištenje alata</td>
+<td>Claude 4/4.5 s alatnim lancima</td>
+</tr>
+<tr class="even">
+<td><strong>Grok serija</strong> (xAI)</td>
+<td>Korištenje alata, načini promišljanja, specijalizirane kodne krajnje točke</td>
+<td>Grok-4 sa kodnom specijalizacijom</td>
+</tr>
+<tr class="odd">
+<td><strong>AlphaCode</strong> (DeepMind)</td>
+<td>Masovno stohastičko uzorkovanje, filtriranje bazirano na izvršavanju</td>
+<td>AlphaCode 2 s Gemini politikama</td>
+</tr>
+</tbody>
+</table>
+<p>OpenAI-jeva GPT serija snažno je oblikovala inteligenciju koda <span class="citation" data-cites="chen2021codex">Chen i ostali (<a href="#ref-chen2021codex" role="doc-biblioref">2021</a>)</span>. Rani GPT-1 i GPT-2, koji su bili otvoreni, potvrdili su valjanost generativnog pretreniranja. Vlasnički nasljednici, GPT-3, Codex, GPT-4 i o-serija usmjerena na rezoniranje, proširili su raspon od učenja iz konteksta i sinteze koda do multimodalnog korištenja i popravaka na razini repozitorija. GPT-3 je demonstrirao da se modeli mogu prilagoditi iz samo nekoliko primjera bez ažuriranja parametara. Codex je nastavio treniranje GPT-3 na golemim GitHub bazama koda i pogonio je GitHub Copilot, čime je uspostavljen prvi masovni most između jezičnog modela i stvarnog programerskog alata. InstructGPT uveo je usklađivanje s ljudskim povratnim informacijama <span class="citation" data-cites="ouyang2022instructgpt">Ouyang i ostali (<a href="#ref-ouyang2022instructgpt" role="doc-biblioref">2022</a>)</span>. ChatGPT je to nadogradio stabilnim višekružnim dijalogom i sigurnosnim mehanizmima. GPT-4 je unaprijedio rezoniranje i sintezu koda, dok su varijante poput GPT-4 Turbo, GPT-4o i GPT-4o mini optimizirale učinkovitost, multimodalnost i troškovnu pristupačnost. O-serija (o1, o3) uvela je korak po korak unutarnje promišljanje, posebno za složene zadatke kodiranja. GPT-5 i GPT-5-Codex predstavljaju najnoviju generaciju koja spaja vrhunske rezultate na mjerilima s interaktivnim, povratnom informacijom vođenim radnim procesima razvoja.</p>
+<p>Googleova linija PaLM-Gemini evoluira od gustog Pathways skaliranja prema redizajnu usmjerenom na učinkovitost s višejezičnim pretreniranjem, do nativne multimodalnosti s rijetkim usmjeravanjem i memorijski učinkovitom pažnjom za duge kontekste. PaLM je pokazao da se opći modeli trenirani na mješavini prirodnog jezika i znatnog koda učinkovito prenose na programerske zadatke. PaLM 2 je usavršio ravnotežu skaliranja i podataka. Gemini 1 i 1.5 uveli su nativnu multimodalnost, a Gemini 1.5 je dodao rijetke stručnjake, poboljšanja učinkovitosti i kontekst od milijun tokena, omogućujući razumijevanje na razini repozitorija. Gemini 2 i 2.5 naglašavaju učinkovitost, rezoniranje i kodnu inteligenciju s proširenim kontekstom.</p>
+<p>Anthropicova Claude linija evoluira od dekoder-samo LLM-ova usklađenih putem RLHF i ustavne umjetne inteligencije do alata obogaćenih dugim kontekstom i agentskih kodera. Claude 1 i 2 dodali su dugi kontekst i sigurnije praćenje uputa. Claude 3 i 3.5 uveli su nativnu multimodalnost i pozivanje funkcija s poboljšanjima na HumanEvalu. Claude 4 i 4.5 integriraju promišljeno rezoniranje i alatni lanac za korištenje računala, uključujući izolirani terminal, uređivač, upravitelj paketa i preglednik, s kontroliranim korištenjem alata i paralelnim računanjem u vrijeme testiranja.</p>
+<p>Grok serija od xAI-ja evoluira od vlasničkog LLM-a koji prati upute u agentsku, kodu orijentiranu obitelj s duljim kontekstom. Generacija Grok-4 naglašava nativno korištenje alata i načine promišljanja s pretraživanjem u stvarnom vremenu, plus kodnu specijaliziranu krajnju točku.</p>
+</section>
+<section id="sec-otvoreni" class="level3">
+<h3 class="anchored" data-anchor-id="sec-otvoreni">Otvoreni modeli za kod</h3>
+<p>Zatvoreni modeli definirali su horizonte mogućeg, ali otvoreni modeli demokratizirali su pristup. Zamislite razliku između vlasničke tvornice lijekova koja drži formulu u sefu i znanstvenika koji objavljuju cijeli recept u akademskom časopisu. Oboje proizvode lijek, ali otvoreni pristup omogućuje drugima da ponove, prilagode i poboljšaju. Upravo to se dogodilo s otvorenim modelima za kod.</p>
+<p>Razvoj otvorenih velikih jezičnih modela za kod može se sustavno kategorizirati u četiri evolucijske faze na temelju arhitektonskih inovacija i funkcionalnih sposobnosti.</p>
+<p><strong>Faza 1: Pretrenirirani enkoder modeli (2020-2021).</strong> Početna faza bila je obilježena enkoder modelima poput CodeBERTa <span class="citation" data-cites="feng2020codebert">Feng i ostali (<a href="#ref-feng2020codebert" role="doc-biblioref">2020</a>)</span>, GraphCodeBERTa i CodeT5. Ovi modeli primarno su se fokusirali na zadatke razumijevanja koda, uspostavljajući temeljno poravnanje koda i teksta putem dvosmjernih mehanizama pažnje. Njihove ključne snage ležale su u klasifikaciji koda, otkrivanju ranjivosti i semantičkom pretraživanju koda.</p>
+<p><strong>Faza 2: Generativni modeli (2021-2022).</strong> Druga faza svjedočila je pojavi generativnih modela uključujući CodeT5 i CodeGPT, koji su uveli enkoder-dekoder arhitekture sposobne i za razumijevanje i za generiranje koda. CodeParrot je bila obitelj dekoder-samo GPT-2 modela specifično treniranih za generiranje Python koda. CodeGPT je bila obitelj GPT transformera razvijenih od strane Microsoft Researcha. T5 serija za kod koristila je tokenizator svjestan koda i pretreniranje svjesno identifikatora.</p>
+<p><strong>Faza 3: Veliki jezični modeli (2023-2024).</strong> Treća faza označila je paradigmatski pomak s pojavom otvorenih jezičnih modela velikog razmjera poput <a href="https://huggingface.co/bigcode/starcoder">StarCodera</a> <span class="citation" data-cites="li2023starcoder">R. Li i ostali (<a href="#ref-li2023starcoder" role="doc-biblioref">2023</a>)</span>, Code LLaMA-e, <a href="https://github.com/deepseek-ai/DeepSeek-Coder">DeepSeek-Codera</a> i CodeQwena <span class="citation" data-cites="wang2024qwencoder">Hui i ostali (<a href="#ref-wang2024qwencoder" role="doc-biblioref">2024</a>)</span>. Ovi modeli pokazali su izvanredne sposobnosti u složenom generiranju koda, višekružnom konverzacijskom programiranju i praćenju uputa, demonstrirajući da otvoreni modeli mogu postići konkurentne performanse s vlasničkim suparnicima. StarCoder i StarCoderBase su dekoder-samo modeli s otvorenim pristupom <span class="citation" data-cites="lozhkov2024starcoder2">Lozhkov i ostali (<a href="#ref-lozhkov2024starcoder2" role="doc-biblioref">2024</a>)</span>. Code LLaMA je obitelj bazirana na LLaMA 2 <span class="citation" data-cites="touvron2023llama2">Touvron i ostali (<a href="#ref-touvron2023llama2" role="doc-biblioref">2023</a>)</span> koja naglašava snažno popunjavanje, podršku za dugi kontekst i praćenje uputa za programiranje. DeepSeek-Coder je obitelj otvorenog koda (1.3B do 33B) trenirana od nule na višejezičnim bazama koda. StarCoder2 unapređuje BigCode liniju sa The Stack v2, većim i raznolikijim izvorom podataka. Qwen2.5-Coder proširuje se na obitelj od 0.5B do 32B.</p>
+<p><strong>Faza 4: Napredno skaliranje i agentski modeli (2024-2025).</strong> Trenutna faza predstavlja dva velika razvoja. Prvo, masivno skaliranje parametara kroz MoE arhitekture koje održavaju visoku učinkovitost zaključivanja. Drugo, evoluciju prema agentskim sustavima koji integriraju korištenje alata, višekorakno rezoniranje i sposobnosti interakcije s okruženjem. DeepSeek-Coder-V2 usvaja MoE okosnicu s mješovitim podatcima i proširenim kontekstom. Qwen3-Coder unapređuje agentske sposobnosti. GLM-4.5 i 4.6 su otvoreni MoE temeljni modeli za agentske, rezonantne i kodne zadatke. DeepSeek-V3 serija postiže vrhunske performanse otvorenog koda na kodnim mjerilima, rivalizirajući zatvorene modele.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Za vašu profesionalnu praksu: Otvoreni modeli više nisu samo laboratorijski eksperimenti. Oni su produkcijski alati koji rade na pristupačnom hardveru, poštuju licencne uvjete i omogućuju organizacijama punu kontrolu nad kodom koji generiraju. Razumijevanje ove evolucije od enkoder modela do agentskih sustava ključno je za donošenje informirane odluke.</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sec-evaluacija" class="level1">
+<h1>Zadaci, mjerila i evaluacija koda</h1>
+<p>Zamislite da ste učitelj u školi i da vaši učenici tvrde da savršeno vladaju matematikom. Kako ćete to provjeriti? Trebat će vam ispiti. Ne bilo kakvi ispiti, nego takvi koji pokrivaju aritmetiku, algebru, geometriju i analizu, koji imaju pitanja različite težine, i koji ne dopuštaju učenicima da odgovaraju na pitanja koja su već vidjeli tijekom vježbanja. Trebat će vam i jasni kriteriji ocjenjivanja, jer razlika između potpuno točnog odgovora, djelomično ispravnog postupka i potpuno pogrešnog pristupa mora biti transparentna. Upravo ta logika stoji iza čitavog ekosustava zadataka, mjerila (engl. <em>benchmarks</em>) i metrika evaluacije koji služe za procjenu sposobnosti velikih jezičnih modela za kod. Bez njih, tvrdnje o sposobnostima modela bile bi jednako vjerodostojne kao tvrdnje učenika koji kaže da zna matematiku ali odbija pisati ispit.</p>
+<p>Krajolik kodnih zadataka i mjerila može se organizirati u hijerarhijsku taksonomiju duž tri razine granularnosti. Prva razina obuhvaća zadatke na razini izjave, funkcije i klase, uključujući dovršavanje koda, popunjavanje sredine (FIM), generiranje koda, uređivanje i popravljanje grešaka, učinkovitost koda, preferencije koda, rezoniranje i odgovaranje na pitanja, prevođenje koda i generiranje testnih slučajeva. Druga razina obuhvaća zadatke na razini repozitorija, uključujući generiranje i dovršavanje u velikim bazama koda, domenski specifično generiranje koda, uređivanje, refaktoriranje i suradnju agenata, generiranje poruka predaja (engl. <em>commit messages</em>), rješavanje zadataka softverskog inženjerstva i sveobuhvatni razvoj softvera. Treća razina obuhvaća agentske sustave, uključujući korištenje alata, duboko istraživanje, web pretraživanje, interakciju s grafičkim korisničkim sučeljima i korištenje terminala. Zajedno, ove tri razine čine konsolidiranu mapu trenutnih evaluacijskih resursa kroz sve sposobnosti i razmjere.</p>
+<section id="sec-metrike" class="level2">
+<h2 class="anchored" data-anchor-id="sec-metrike">Metrike evaluacije</h2>
+<section id="sec-pass-at-k" class="level3">
+<h3 class="anchored" data-anchor-id="sec-pass-at-k">Pass@k</h3>
+<p>Pass@k je temeljna metrika za procjenu sposobnosti modela da generira točne programerske rješenja. U ovoj metrici model generira <em>k</em> kandidatskih rješenja za svaki zadatak, a rješenje se smatra prolaznim ako je bar jedno od <em>k</em> rješenja točno, provjereno izvršavanjem na testnim slučajevima. Izbor vrijednosti <em>k</em> (obično 1, 5, 10 ili 100) odražava različite scenarije primjene. Pass@1 simulira okruženja gdje je dostupna samo jedninatačna rješenja, poput Chat sučelja, gdje korisnik očekuje jedan odgovor. Pass@100 oponaša scenarije offline obrade gdje se mogu generirati i rangirati mnoga rješenja prije isporuke krajnjem korisniku. Pass@k je posebno važna jer omogućuje mjerenje sposobnosti modela u scenarijima gdje je paralelnost i raznolikost generiranja praktično dostupna.</p>
+</section>
+<section id="sec-accuracy" class="level3">
+<h3 class="anchored" data-anchor-id="sec-accuracy">Točnost (Accuracy)</h3>
+<p>Točnost mjeri postotak testnih primjera na kojima je model dao točan odgovor. U domeni kodiranja, točnost je često definirano kao omjer broja testnih slučajeva koje je generirani kod prošao u odnosu na ukupan broj testnih slučajeva. Iako je jednostavna i intuitivna metrika, točnost može biti zljegledno ako testni slučajevi nisu reprezentativno pokrivanje mogućih scenarija. Primjerice, model s točnosti od 85% može sjajno raditi na jednostavnim operacijama, ali potpuno zakazati na rubnim slučajevima ili na kodu s vanjskim učincima.</p>
+</section>
+<section id="sec-bleu-rouge" class="level3">
+<h3 class="anchored" data-anchor-id="sec-bleu-rouge">BLEU i ROUGE</h3>
+<p>BLEU (engl. <em>Bilingual Evaluation Understudy</em>) i ROUGE (engl. <em>Recall-Oriented Understudy for Gisting Evaluation</em>) metriken su izvorno razvijene za procjenu strojnog prevođenja i sumarizacije teksta, ali su adaptirane i za procjenu generiranja koda. BLEU mjeri preklapanje između generiranog i referentnog koda na razini n-grama, dok ROUGE mjeri dohvat (engl. <em>recall</em>) koji se može prilagoditi za različite vrste kodnog podudaranja. Međutim, obje metriken imaju ograničenja u domeni kodiranja jer su osjetljive na sintaksne varijacije koje ne utječu na semantiku ili ispravnost koda. Kod je inherentno robustan na permutacije, preimenovanje varijabli i razumnu preoblikovanje logike, a metriken kao BLEU i ROUGE ne mogu biti te razlike.</p>
+</section>
+<section id="sec-tree-based" class="level3">
+<h3 class="anchored" data-anchor-id="sec-tree-based">Tree-based Metrics</h3>
+<p>Tree-based metriken poput CodeBLEU izbjegavaju probleme s površinskim upoređivanjem tako što prvo parsiraju kod u apstraktno sintaksno stablo (engl. <em>Abstract Syntax Tree</em> ili AST) i zatim mjere sličnost strukturalno, uključujući sličnost u nomenklaturi, ključnim riječima, AST čvorovima i redoslijedu putanje. CodeBLEU posebno je pokazao korelaciju sa ljudskom evaluacijom za razumijevanje ispravnosti koda, što ga čini bolјim pokazateljem od površinskog BLEU za kodne zadatke. Ipak, čak i CodeBLEU ne može u potpunosti zarobiti semantičke varijacije koje su moguće u kodu, što znači da ga je kao jedinu metriku potrebno kombinirati s metodama koje izvršavaju kod.</p>
+</section>
+<section id="sec-execution" class="level3">
+<h3 class="anchored" data-anchor-id="sec-execution">Execution-based Metrics</h3>
+<p>Execution-based metriken mjere ispravnost koda izvršavanjem na testnim slučajevima. Pass@1, Pass@k, točnost, brzina izvršavanja i potrošnja memorije sve su execution-based metriken koje vam daju operativne povratne informacije o kodu koji je generiran. Prednosti su jasne: ako kod prođe sve testne slučajeve, model je dao ispravno rješenje. Nedostaci su praktični i teorijski. Praktični nedostaci uključuju potrebu za sigurnom izolacijom okruženja za izvršavanje, jer je mogućnost da generirani kod sadržava zlonamjerni kod ili beskonačne petlje, te potrebu za vremenskim ograničenjima i ograničenjima memorije. Teorijski nedostaci uključuju potencijal za curenje podataka ako su testni slučajevi dostupni tijekom pretreniranja, što je čini važno dekontaminirati evaluacijske skupove prije procjene.</p>
+</section>
+<section id="sec-embedding" class="level3">
+<h3 class="anchored" data-anchor-id="sec-embedding">Embedding-based Metrics</h3>
+<p>Embedding-based metriken koriste predstavljene modela za kodiranje (engl. <em>code embedding</em>) da mjere sličnost između referencirati i generiranog koda. Umjesto direktnog podudaranja ili izvršavanja, ove metriken koriste semantičko razumijevanje da procijene koliko su dva komada koda bliski u prostoru značenja. Primjer je CodeSearchNet Evaluation (CSE) koja koristi obuke enkoder-dekoder modele za generiranje ugrađivanja i mjerenje kosinusne sličnosti između ugrađivanja referencitanog i generiranog koda. Dok su ove metriken fleksibilne i mogu se primijeniti na bilo koji kod bez potrebe za izvršavanjem, njihova kvaliteta ovisna je o kvaliteti osnovnog modela za ugrađivanje i mogu biti osjetljive na promjene u samom modelu tijekom vremena.</p>
+</section>
+<section id="sec-human-eval" class="level3">
+<h3 class="anchored" data-anchor-id="sec-human-eval">Human Evaluation</h3>
+<p>Ljudska evaluacija je temeljna metrika koja se koristi za validaciju svih automatiziranih metrika. Ljudski prosuditelji procjenjuju ispravnost, čitljivost, učinkovitost i prikladnost generiranog koda prema različitim kriterijima. Ljudska evaluacija je skupna, ali omogućuje hvatanje nijansi koje automatizovane metriken mogu propustiti, kao što su idiomatski kod, kvaliteta komentara i prikladnost imena varijabli za čitljivost. Standardne prakse uključuju višestruko prosud - više ljudskih prosuditelja procjenjuje svaki primjer - i izračunavanje Cohen-ovog Kappa koeficijenta za procjenu dogovor između prosuditelja.</p>
+</section>
+</section>
+<section id="sec-funkcije" class="level2">
+<h2 class="anchored" data-anchor-id="sec-funkcije">Zadaci na razini funkcije</h2>
+<p>HumanEval je reprezentativan benchmark za procjenu sposobnosti modela na zadacima na razini funkcije. Skup sadrži 164 ručno napisane funkcije s opise u prirodnom jeziku, testne slučajeve i očekivane izlaze. Za svaki zadatak, model mu je dana engleska opisna funkcija i trebao je generirati Python implementaciju. Evaluacija koristi Pass@k s različitim vrijednostima <em>k</em> kako bi se prosudila kako se sposobnost modela poboljšava sa višestrukim pokušajima. MBPP (engl. <em>Mostly Basic Programming Problems</em>) pruža 974 problem višestruke težine, od početne do srednje razine, što pruža šira pokrivanja. BabelCode proširuje zadatke na 23 jezika, omogućavajući procjenu sposobnosti modela bez jezika specifičnog biranja. LiveCodeBench koristi Codeforces kao izvor za na razini repozitorija probleme koji se kontinuirano ažuriraju kako se dodaju novi problemi, eliminirajući mogućnost data leakage i omogućavajući stalnu evaluaciju modela.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Za vašu profesionalnu praksu: Razumijevanje različitih mjerila i metrika ključno je jer izbor mjerila može značajno utjecati na kako se modeli rangiraju i opredjeljuju. Neki modeli mogu biti odličan Pass@1 (prvi pokušaj), ali loši u Pass@100 (stotina pokušaja), što ima grote implikacije za kako ga implementirate u stvarnom okruženju.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-usklađivanje" class="level1">
+<h1>Usklađivanje</h1>
+<p>Zamislite da ste upravo zaposlili sjajnog mladog inženjera koji je završio fakultet s najboljim ocjenama. Zna teoriju, razumije algoritme, može riješiti gotovo svaki zadatak na papiru. Ali prvog dana na poslu sjedne za računalo i počne pisati kod koji je tehnički ispravan, ali ne prati konvencije vašeg tima, ignorira sigurnosne prakse vaše organizacije i proizvodi rješenja koja nitko drugi ne može održavati. Što trebate napraviti? Trebate ga uskladiti, naučiti ga ne samo što je ispravno, nego i što je poželjno, korisno i sigurno u kontekstu stvarnog rada. Upravo to je usklađivanje (engl. <em>alignment</em>) u kontekstu velikih jezičnih modela za kod. To je proces prilagodbe pretreniranih LLM-ova da prate ljudske upute i učinkovito obavljaju zadatke kodiranja.</p>
+<p>Usklađivanje se oslanja na dva temeljna pristupa. Prvi je nadzirano fino ugađanje (engl. <em>Supervised Fine-Tuning</em> ili SFT), u kojem model uči iz označenih skupova podataka koji pokrivaju zadatke poput generiranja koda, popravljanja i prevođenja. Drugi je pojačano učenje (engl. <em>Reinforcement Learning</em> ili RL), koje koristi signale nagrade za daljnje usavršavanje ponašanja modela. Posebno moćna varijanta je pojačano učenje s provjerljivim nagradama (engl. <em>Reinforcement Learning with Verifiable Rewards</em> ili RLVR), gdje modeli primaju determinističke povratne informacije o prolazu ili padu od testnih slučajeva ili kompajlera, omogućujući im razvoj strukturiranog rezoniranja, samoverifikacije i sposobnosti ispravljanja grešaka. Zajedno, ove metode usklađivanja transformiraju opće pretreniranje modele u specijalizirane pomoćnike za kodiranje sposobne za razumijevanje zahtjeva, generiranje ispravnih rješenja i rukovanje složenim scenarijima razvoja softvera u stvarnom svijetu.</p>
+<section id="sec-sft" class="level2">
+<h2 class="anchored" data-anchor-id="sec-sft">Nadzirano fino ugađanje (SFT)</h2>
+<p>Nadzirano fino ugađanje je proces treniranja pretreniranog jezičnog modela na označenom skupu podataka. Uobičajen i moćan način formatiranja tih podataka je ugađanje na uputama (engl. <em>instruction tuning</em>), gdje model uči pratiti naredbe na prirodnom jeziku. Opseg podataka za ugađanje kodnih uputa je širok, pokrivajući raznolik raspon programerskih zadataka uključujući, ali ne ograničavajući se na, generiranje koda, popravljanje koda i prevođenje koda.</p>
+<p>Rani podatci za ugađanje kodnih uputa izvlačeni su iz raznih programerskih zajednica i platformi, poput parova kod/komentar iz GitHub repozitorija i korisničkih pitanja i odgovora sa StackExchangea. Međutim, budući da svaki podatak dolazi od različitih korisnika iz raznolikih izvora, kvaliteta je često neujednačena. Kao alternativa, pristup samoinstrukcije (engl. <em>self-instruct</em>) koristi moćnije LLM-ove za generiranje kvalitetnijih i standardiziranijih podataka kroz visokokvalitetne demonstracije i učenje iz konteksta.</p>
+<section id="sec-sft-single" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sft-single">Jednokružno nadzirano fino ugađanje</h3>
+<p>Kod u ranim skupovima podataka uglavnom se sastojao od osnovnih operacija poput stvaranja objekata i aritmetike, bez naprednih algoritama i složene logike. Da bi se to riješilo, predložena je metoda Evol-Instruct koja vodi model da generira složenije proširene podatke na temelju izvornih podataka koristeći niz ručno izrađenih heurističkih pravila. Kako se obujam generiranih podataka povećava, raste i vjerojatnost da metoda samoinstrukcije proizvede ponavljajuće ili slične podatke. Učinkovito rješenje je uvesti ljudski pisane kodne podatke tijekom procesa generiranja, koristeći njihovu bogatu raznolikost za izbjegavanje ponavljanja. Semi-Instruct metoda koristi raznolike podatke kao temelj i primjenjuje metodu samoinstrukcije za njihovo prepisivanje. OSS-Instruct usvaja sličan proces s razlikom što se sirovi podatci sastoje od isječaka koda umjesto potpunog koda.</p>
+</section>
+<section id="sec-sft-multi" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sft-multi">Višekružno nadzirano fino ugađanje</h3>
+<p>Ključna značajka koja razlikuje kod od prirodnog jezika je njegova izvršivost. Stoga se generirani kod može verificirati korištenjem kompajlera i interpretera, pružajući jeftine i visoko učinkovite signale povratnih informacija bez ljudske intervencije za vođenje poboljšanja nakon pojave grešaka. Zamislite to kao kuhara koji ne treba čekati gosta da mu kaže je li jelo dobro, nego može sam kušati svaki korak pripreme.</p>
+<p>AIEV-Instruct postavlja agenta ispitivača i agenta programera temeljenih na istom velikom modelu. Kada kod koji generira agent programer ne prođe verifikaciju, agent ispitivač intervenira, postavljajući pitanja na temelju greške kako bi olakšao poboljšanje. Podatci konstruirani s povratnim informacijama inherentno su višekružni, dok korisnici u praktičnim primjenama općenito preferiraju jednokružne interakcije kad god je to moguće. Za premošćivanje ovog jaza između treniranja i zaključivanja, predložena je metoda samodestilacije koja dodaje sažetak poput završnog kruga na kraju višekružnih podataka.</p>
+</section>
+<section id="sec-sft-repo" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sft-repo">SFT za zadatke na razini repozitorija</h3>
+<p>Dok se tradicionalno ugađanje kodnih uputa fokusiralo na izolirane funkcije ili zadatke na razini datoteka, složenost razvoja softvera u stvarnom svijetu zahtijeva modele koji mogu razumjeti i navigirati čitavim strukturama repozitorija. Skupovi podataka za SFT na razini repozitorija pojavili su se kao važan resurs za treniranje kodnih LLM-ova za rukovanje međudatotečnim ovisnostima, višedatotečnim uređivanjima i dugokontekstnim rezoniranjem koji karakteriziraju praktične scenarije softverskog inženjerstva.</p>
+<p>SWE-smith uvodi skalabilni cjevovod koji generira veliku kolekciju instanci zadataka iz GitHub repozitorija, predstavljajući red veličine povećanja nad prethodnim radovima. SWE-Synth nadopunjuje ovo sintetiziranjem provjerljivih podataka o popravcima grešaka kroz radne procese uklanjanja grešaka vođene LLM-ovima. SWE-Gym pruža Python instance zadataka s izvršivim okruženjima za izvršavanje, omogućujući pristupe pojačanog učenja. RepoBench evaluira automatsko dovršavanje kroz tri međusobno povezana zadatka kroz desetke tisuća Python i Java repozitorija, specifično mjereći razumijevanje međudatotečnog konteksta.</p>
+<p>Unatoč izazovima poput računalnih troškova održavanja okruženja za izvršavanje i osiguranja kvalitete podataka tijekom skaliranja, dosljedna poboljšanja kroz mjerila i jasni zakoni skaliranja podataka ukazuju da je ulaganje u veće, raznolikije skupove podataka na razini repozitorija obećavajući put za unapređenje autonomnih programerskih sustava.</p>
+</section>
+<section id="sec-sft-reasoning" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sft-reasoning">Metode bazirane na rezoniranju</h3>
+<p>LLM-ovi bazirani na rezoniranju predstavljaju značajan napredak nad tradicionalnim modelima ugođenim na uputama uključivanjem eksplicitnih procesa lanca misli (engl. Chain-of-Thought ili CoT) tijekom zaključivanja, omogućujući im da dekompoziraju složene probleme u međukorake i provode sustavniju analizu. Zamislite razliku između studenta koji pokušava odmah napisati konačni odgovor na ispitu i studenta koji prvo napiše plan, zatim korak po korak izvodi rješenje, provjerava svaki korak i tek onda zapisuje konačni rezultat. Drugi student je pouzdaniji, čak i kada je problem složen, jer je naučio proces razmišljanja, a ne samo konačne odgovore.</p>
+<p>Mehanizam iza uspjeha CoT-a vezan je za način na koji strukturira proces rješavanja problema za model. Generiranje eksplicitnog lanca rezoniranja služi kao računalna bilježnica (engl. scratchpad), omogućujući modelu da preuzme međukorake i zaključke u svoj kontekstni prozor. Zanimljivo, učinkovitost ovog procesa čini se da više ovisi o strukturi rezoniranja nego o činjeničnoj ispravnosti njegovog sadržaja. Studije su pokazale da modeli mogu naučiti učinkovita ponašanja rezoniranja čak i kada su fino ugođeni na CoT demonstracijama s pogrešnom logikom ili netočnim konačnim odgovorima, što sugerira da je primarna uloga CoT-a tijekom finog ugađanja naučiti model strukturiran, promišljen pristup rješavanju problema.</p>
+</section>
+<section id="sec-sft-strategy" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sft-strategy">Strategije treniranja</h3>
+<p>Nakon proširenja podataka, neki radovi fokusirali su se na učinkovitije treniranje. Jedan aspekt je filtriranje kvalitete velikih skupova podataka. Pristupi uključuju grupiranje svih podataka i zadržavanje različitog broja podatkovnih točaka iz svake grupe na temelju gustoće centra grupe, čime se postiže deduplikacija podataka. Drugi pristupi najprije se fokusiraju na težinu i ispravnost podataka prije razmatranja raznolikosti, trenirajući bodovatelja složenosti za odabir najtežih podataka i generator testova za izračun stope prolaza testnih slučajeva za svaku podatkovnu točku.</p>
+<p>Osim kvalitete podataka, višezadaćna ravnoteža également je važna. Tretiranje generiranja koda i evaluacije koda kao dvofaznog zadatka treniranja značajno poboljšava performanse modela. Integracija višestrukih funkcija gubitka i predlaganje okvira za višezadaćno fino ugađanje koji može fino ugoditi zadatke paralelno pokazali su se konzistentno korisnim.</p>
+</section>
+<section id="sec-sft-challenges" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sft-challenges">Izazovi u SFT-u</h3>
+<p>Unatoč brojnim metodama i skupovima podataka koji su se pojavili u ugađanju kodnih uputa, nekoliko izazova i dalje ostaje. Curenje podataka znači da trenirni podatci mogu sadržavati informacije iz testnih ili evaluacijskih skupova, što ne samo da dovodi do napuhanih performansi nego može prikriti nedostatke modela u scenarijima iz stvarnog svijeta. Pristranost podataka očituje se u pretjeranom fokusu na jednostavne programerske zadatke, što dovodi do loših performansi modela na složenim zadacima.</p>
+<p>Nedovoljna višejezična podrška znači da su trenutni skupovi podataka pretežno bazirani na uskom skupu popularnih programskih jezika poput Pythona ili JavaScripta, ograničavajući primjenjivost modela za programere koji rade u drugim jezicima poput C++, Rusta, Goa ili Swifta. Jezici se fundamentalno razlikuju ne samo u površinskoj sintaksi, nego i u dubljim semantičkim aspektima poput idioma, standardnih biblioteka, upravljanja memorijom i dizajnerskih obrazaca.</p>
+</section>
+</section>
+<section id="sec-hladni-start" class="level2">
+<h2 class="anchored" data-anchor-id="sec-hladni-start">Hladni start i destilacija podataka rezoniranja</h2>
+<p>Ovaj odjeljak bavi se pitanjem kako od nule konstruirati visokokvalitetne podatke za fino ugađanje rezoniranja. Zamislite da trenirate mladu šahistkinju. Ne dajete joj tisuće nasumičnih partija, nego pažljivo birate partije velikih majstora koje demonstriraju važne strategije. Upravo to rade istraživači kada konstruiraju skupove podataka za destilaciju rezoniranja.</p>
+<p>Proces se odvija u šest koraka. Prvo, prikupljanje izvora, nabavka sirovih problema i materijala koji čine temeljni sloj skupa podataka, iz akademskih natjecanja, online foruma i sintetičkih ili destiliranih skupova podataka. Drugo, čišćenje i dekontaminacija podataka za poboljšanje integriteta i pouzdanosti trenirnih podataka, uključujući semantičke usporedbe putem LLM-sudca za identificiranje ne samo točnih duplikata nego i parafraziranih problema. Treće, filtriranje pitanja i procjena kvalitete i težine za odabir podskupa problema visoke poluge iz većeg bazena. Četvrto, generiranje lanaca rezoniranja, stvaranje detaljnih rješenja korak po korak za svaki problem. Peto, filtriranje i usavršavanje rješenja za osiguranje da generirana rješenja nisu samo ispravna nego i visokokvalitetna. Šesto, konačna konstrukcija skupa podataka, kompilacija svih obrađenih problema i njihovih usavršenih rješenja u koherentan format spreman za fino ugađanje modela.</p>
+<p>Pristupi konstruiranju konačnog skupa podataka variraju primarno u svom razmjeru i strateškom obrazloženju. Neki projekti poput LIMO-a sa samo 800 primjera i s1 sa samo 1.000 uzoraka prioritiziraju stvaranje izuzetno malih ali visokokvalitetnih skupova podataka, dokazujući da opsežni podatci nisu uvijek nužni za postizanje snažnih sposobnosti rezoniranja. Drugi projekti, ciljajući na vrhunske performanse, konstruiraju znatno veće skupove, poput OpenThoughts3 s 1,2 milijuna uzoraka ili OpenMathReasoning s preko 500.000 jedinstvenih problema. Optimalni pristup odražava jezgrenu hipotezu istraživačkog projekta, s nekim istraživačima koji prioritiziraju podatkovnu učinkovitost i drugima koji se fokusiraju na maksimiziranje performansi i svestranosti.</p>
+</section>
+<section id="sec-visejezieno" class="level2">
+<h2 class="anchored" data-anchor-id="sec-visejezieno">Višejezično razumijevanje i generiranje koda</h2>
+<p>Zamislite prevoditelja koji savršeno prevodi s engleskog na francuski, ali potpuno zakazuje kada mu date tekst na japanskom. Upravo to je situacija s mnogim kodnim LLM-ovima koji briljiraju u Pythonu ali jedva funkcioniraju u Rustu ili Fortranu. Razvoj višejezičnih kodnih LLM-ova može se podijeliti u faze.</p>
+<p>Rani modeli od 2020. do 2021. godine poput JavaBERTa i C-BERTa primarno su se fokusirali na pojedinačne programske jezike s relativno malim skalama parametara od 125 do 350 milijuna. Srednje razdoblje od 2022. do 2023. godine svjedočilo je probojnom napretku, s višejezičnim modelima poput Codexa i AlphaCodea koji su se proširili na 12 do 41 milijardu parametara i podržavali 6 do 12 glavnih programskih jezika. Najnovija generacija modela od 2024. do 2025. godine postigla je skok. DeepSeek-Coder-V2 dosegnuo je 236 milijardi parametara s podrškom za 338 jezika, dok StarCoder2 podržava više od 600 jezika treniranih na više od 4 terabajta podataka, označavajući ulazak kodne inteligencije u eru ultra-velikog višejezičja.</p>
+<p>Trenirni korpusi evoluirali su od pojedinačnih GitHub repozitorija do ultra-velikog fuziranja iz višestrukih izvora, uključujući GitHub, Stack Overflow, CodeSearchNet, seriju The Stack, The Pile, sintetičke udžbeničke podatke, tragove izvršavanja i paralelne prevodilačke korpuse. Arhitektonski, područje pokazuje raznolikost od BERT enkoder modela, preko T5 enkoder-dekoder modela, do GPT dekoder modela i pristupa grafičkih neuronskih mreža koji integriraju strukturu koda. Najnoviji trendovi uključuju male učinkovite modele koji traže ravnotežu između performansi i troška, međujezično prevođenje koda koje se pojavljuje kao neovisni istraživački smjer, multimodalnu fuziju i specijaliziranu optimizaciju za niskoresursne i naslijeđene jezike.</p>
+</section>
+<section id="sec-multimodalno" class="level2">
+<h2 class="anchored" data-anchor-id="sec-multimodalno">Multimodalno razumijevanje i generiranje koda</h2>
+<p>S brzim razvojem vizualno-jezičnih multimodalnih velikih jezičnih modela, istraživanje generiranja koda proširuje se od čisto tekstualnog ulaza prema novoj paradigmi koja uključuje više modaliteta poput slika, skica i interaktivnih signala. Multimodalno generiranje koda (engl. Multimodal Code Generation ili MCG) cilja omogućiti modelima da razumiju vizualne dizajnerske namjere i generiraju izvršivi, renderirajući visokokvalitetan kod, čime premošćuje jaz između apstraktnog razmišljanja visoke razine i implementacije koda niske razine. Na temelju scenarija primjene i tehničkog fokusa, ovo područje dijeli se u tri osnovna podpolja.</p>
+<section id="sec-multimodal-ui" class="level3">
+<h3 class="anchored" data-anchor-id="sec-multimodal-ui">Generiranje korisničkog sučelja</h3>
+<p>Evolucija je tekla od jednog modaliteta prema višemodalnosti i od statičnog prema dinamičnom. Rani sustavi poput pix2codea demonstrirali su izvedivost mapiranja snimaka zaslona grafičkog sučelja u platformski specifičan kod. Potom su uslijedili pristupi slika u kod, dizajn u kod, skica u kod i interakcija u kod.</p>
+<p>Design2Code je izgradio opsežno mjerilo koje sadrži 43.000 parova snimka zaslona ili HTML-a, sustavno evaluirajući 9 multimodalnih velikih jezičnih modela i predlažući hijerarhijske metrike evaluacije. Sketch2Code je objavio prvo mjerilo s 731 visokokvalitetnom rukom nacrtanom skicom. Interaction2Code je definirao novu paradigmu zadataka za dinamičnu razinu, objavljujući mjerilo sa 127 web stranica, 374 interakcije i 31 vrstu događaja.</p>
+</section>
+<section id="sec-multimodal-web" class="level3">
+<h3 class="anchored" data-anchor-id="sec-multimodal-web">Web utjelovljena inteligencija</h3>
+<p>Ovo područje nadilazi opseg statičnog generiranja koda, zahtijevajući od AI agenata da dovršavaju složene zadatke u stvarnim web okruženjima kroz petlje promatranja, rezoniranja i djelovanja. WebArena pruža realistične i složene otvorene platforme s funkcionalnim okruženjima repliciranim sa stvarnih web stranica i više od 800 zadataka dugoročnog planiranja.</p>
+<p>WebVoyager je prekretnica u ovom području, prvi put ostvarujući cjelovite multimodalne web agente koji izravno koriste snimke zaslona kao ulaz za simulaciju ljudskog ponašanja pregledavanja. Agent-E predlaže hijerarhijske arhitekture agenata, dekomponirajući složene web zadatke u planera i navigatora preglednika.</p>
+</section>
+<section id="sec-multimodal-artifacts" class="level3">
+<h3 class="anchored" data-anchor-id="sec-multimodal-artifacts">Generiranje artefakata softverskog inženjerstva</h3>
+<p>Ovo podpolje cilja stvaranje pratećih artefakata za kod, uključujući UML dijagrame, dijagrame podataka, dijagrame toka, dijagrame arhitekture i druge vizualne dokumente softverskog inženjerstva. nvAgent predlaže višeagentski suradnički sustav za generiranje vizualizacija iz prirodnog jezika. Plot2Code uspostavlja sveobuhvatno mjerilo za evaluaciju multimodalnih LLM-ova u generiranju koda iz znanstvenih grafova. Flow2Code evaluira sposobnosti mapiranja dijagrama toka u kod, pokrivajući 15 programskih jezika. ArtifactsBench predlaže probojnu automatiziranu multimodalnu paradigmu evaluacije, rješavajući bolnu točku tradicionalne evaluacije koja ignorira vizualnu vjernost i potpunost interakcije.</p>
+</section>
+</section>
+<section id="sec-pojacano-ucenje" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pojacano-ucenje">Pojačano učenje u kodnoj inteligenciji</h2>
+<p>Pojačano učenje transformiralo je pristup treniranju modela za kodiranje na način koji je teško podcijeniti. Zamislite da učite dijete igrati šah. Nadzirano fino ugađanje je kao kad mu pokazujete partije velemajstora. Pojačano učenje je kao kad dijete samo igra partije, dobiva nagradu kad pobijedi i kaže mu se samo rezultat. Kroz tisuće partija, dijete razvija intuiciju. Upravo to rade algoritmi pojačanog učenja za kodne LLM-ove, koriste provjerljive nagrade poput prolaza jediničnih testova, grešaka kompajlera i povratnih informacija statičke analize.</p>
+<section id="sec-rl-algoritmi" class="level3">
+<h3 class="anchored" data-anchor-id="sec-rl-algoritmi">Algoritmi pojačanog učenja</h3>
+<p>Metode proksimalne optimizacije politike (PPO) <span class="citation" data-cites="schulman2017ppo">Schulman i ostali (<a href="#ref-schulman2017ppo" role="doc-biblioref">2017</a>)</span> omogućuju online istraživanje s KL-regulariziranim ažuriranjima politike koja balansiraju raznolikost nasuprot vjernosti nadziranom prioru, često kombinirane s nagradama vođenim izvršavanjem i petljama popravaka za pojačanje stope prolaza i smanjenje halucinacija. Izravna optimizacija preferencija (DPO) <span class="citation" data-cites="rafailov2023dpo">Rafailov i ostali (<a href="#ref-rafailov2023dpo" role="doc-biblioref">2023</a>)</span> zaobilazi potrebu za online uzorkovanjem učeći iz parova preferencija destiliranih iz uzoraka ocijenjenih izvršavanjem (uspjeh nasuprot neuspjehu), dajući stabilno usklađivanje za stil koda i korak po korak rezoniranje bez varijance procjena gradijenata politike.</p>
+<p>Pojačano učenje iz povratnih informacija umjetne inteligencije (RLAIF) dodatno koristi jače modele verifikatora i kritičara za pružanje gustih, strukturiranih signala, omogućujući samoverifikaciju i iterativno usavršavanje. Grupna relativna optimizacija politike (GRPO) <span class="citation" data-cites="shao2024grpo">Shao i ostali (<a href="#ref-shao2024grpo" role="doc-biblioref">2024</a>)</span> izbjegava učenje vrijednosti uzorkujući G izlaza za upit i izračunavajući relativne prednosti, dajući stabilna ažuriranja bez kritičara i smanjene memorijske zahtjeve. DAPO poboljšava PPO ili GRPO s inženjerskim usavršavanjima uključujući Clip-Higher za održavanje entropije, dinamičko uzorkovanje, gubitak na razini tokena i oblikovanje nagrade za preduge izlaze.</p>
+</section>
+<section id="sec-rl-generation" class="level3">
+<h3 class="anchored" data-anchor-id="sec-rl-generation">RL za generiranje koda</h3>
+<p>CodeRL je bio pionir u primjeni PPO pristupa tretirajući LM koji generira kod kao mrežu aktera s mrežom kritičara koja pruža guste signale povratnih informacija. Područje se potom pomaknulo prema metodama izravne optimizacije preferencija. CodeDPO uvodi mehanizam samogeneriranja i validacije s algoritmima inspiriranim PageRankom za stvaranje skupova podataka preferencija koji optimiziraju ispravnost i učinkovitost. Najnovije, RLVR je nastao kao probojni pristup koji znatno pojačava sposobnosti generiranja koda. DeepCoder pokazuje učinkovitost ovih metoda, postižući izvanredne performanse na LiveCodeBenchu s distribuiranim RL treningom i dostižući razinu o3-mini s samo 14 milijardi parametara.</p>
+<p>Za dovršavanje koda, RLCoder uvodi RL okvir za dovršavanje na razini repozitorija koji uči dohvatiti koristan sadržaj bez označenih podataka. Za prevođenje koda, CoTran je pionir pojačanog učenja s povratnim informacijama kompajlera i simboličkog izvršavanja za Java-Python prevođenje.</p>
+</section>
+<section id="sec-rl-understanding" class="level3">
+<h3 class="anchored" data-anchor-id="sec-rl-understanding">RL za razumijevanje koda</h3>
+<p>Sažimanje koda profitira od pojačanog učenja za rješavanje problema pristranosti izlaganja inherentnog tradicionalnim okvirima enkodera i dekodera. HAN proširuje ovaj pristup hijerarhijskim mehanizmima pažnje koji integriraju više značajki koda uključujući tipom obogaćena apstraktna sintaksna stabla i tokove kontrole. Za generiranje komentara, TAG uvodi okvir vođenja pomoćnim tipovima koji tretira izvorni kod kao N-arno stablo s informacijama o tipovima, koristeći hijerarhijsko pojačano učenje. Za pretraživanje koda, CoaCor usvaja novu perspektivu treniranjem modela anotacije koda za generiranje opisa koji poboljšavaju performanse dohvata koda.</p>
+</section>
+<section id="sec-rl-swe" class="level3">
+<h3 class="anchored" data-anchor-id="sec-rl-swe">RL za softversko inženjerstvo</h3>
+<p>Rješavanje problema u softverskim repozitorijima složen je izazov u kojem je RL pokazao izvanredan uspjeh. SWE-RL unapređuje rezoniranje LLM-ova kroz pojačano učenje na repozitorijima otvorenog koda. DeepSWE skalira RL treniranje za stvaranje potpuno otvorenog agenta za kodiranje koji postiže vrhunske performanse na SWE-benchu. Za refaktoriranje koda, Refactor-RL fino ugađa modele sekvenca u sekvencu i usklađuje ih korištenjem PPO-a, koristeći uspjeh kompilacije koda i prisutnost refaktoriranja kao signale nagrade. Za pregled koda, PPO-bazirani pristupi formaliziraju predikciju ishoda zahtjeva za spajanje kao Markovljeve procese odlučivanja sa specijaliziranim funkcijama nagrade. Za optimizaciju koda, Pearl uvodi okvir dubokog RL-a koji trenira agente za odabir optimalnih sekvenci poliedarskih transformacija.</p>
+</section>
+<section id="sec-rl-security" class="level3">
+<h3 class="anchored" data-anchor-id="sec-rl-security">RL za sigurnost koda</h3>
+<p>Otkrivanje grešaka u kompajlerima i softverskim sustavima predstavlja značajne izazove. RecBi je pionir pojačanog učenja za izolaciju grešaka kompajlera proširenjem tradicionalnih operatora mutacije strukturnim operatorima. Za automatski popravak programa, RePair uvodi nadzor baziran na procesu, koristeći model nagrađivanja kao kritičara za iterativnu optimizaciju politika popravaka. Za generiranje testova, CURE predlaže okvir ko-evolucije u kojem se sposobnosti kodiranja i generiranja jediničnih testova poboljšavaju kroz njihove ishode interakcije bez nadzora temeljne istine. Za fuzziranje (engl. fuzzing), CovRL-Fuzz kombinira LLM-ove s pojačanim učenjem vođenim pokrivanjem za testiranje JavaScript interpretera, uspješno identificirajući 58 sigurnosnih grešaka iz stvarnog svijeta uključujući 50 prethodno nepoznatih.</p>
+</section>
+</section>
+<section id="sec-rlvr" class="level2">
+<h2 class="anchored" data-anchor-id="sec-rlvr">Pojačano učenje s provjerljivim nagradama</h2>
+<p>Pojačano učenje s provjerljivim nagradama (RLVR) nova je paradigma dizajnirana za pojačavanje sposobnosti rezoniranja u LLM-ovima, posebno za domene poput matematike i sinteze programa. Zamislite to ovako. U klasičnom pojačanom učenju, nagrada dolazi od ljudskog evaluatora koji kaže ovaj odgovor mi se sviđa ili ne sviđa, što je neizbježno subjektivno i skupo. U RLVR-u, nagrada dolazi od determinističkog verifikatora koji kaže kod prolazi sve testove ili kod ne prolazi testove. Nema subjektivnosti, nema ambigviteta, nema troška ljudske evaluacije. Umjesto oslanjanja na naučene modele nagrađivanja ili heurističke ocjene preferencija, funkcija provjerljive nagrade izravno mjeri ispravnost zadatka, primjerice, prolazi li generirani matematički dokaz do ispravnog odgovora ili prolazi li dio koda sve jedinične testove. Nagrada je tipično binarna (prolaz ili pad), pružajući jasan i pouzdan signal koji se precizno usklađuje s ciljevima zadatka.</p>
+<p>Nedavno uvođenje GRPO algoritma i njegova primjena velikog razmjera u DeepSeek-R1 <span class="citation" data-cites="deepseekr1">DeepSeek-AI (<a href="#ref-deepseekr1" role="doc-biblioref">2025</a>)</span> doveli su RLVR u prvi plan istraživanja rezonantnih LLM-ova. GRPO modificira standardni PPO okvir izračunavanjem procjena prednosti unutar grupe generiranih uzoraka umjesto treniranja zasebnog modela vrijednosti. Ovaj pristup grupne normalizacije eliminira potrebu za naučenom mrežom kritičara, značajno poboljšavajući učinkovitost i stabilnost treniranja uz održavanje usklađenosti s provjerljivom nagradom. Ova svojstva čine RLVR posebno prikladnim za domene intenzivnog rezoniranja poput algoritmičkog rješavanja problema i sinteze koda, gdje se ispravnost može eksplicitno provjeriti računalnim proročištem.</p>
+<section id="sec-rlvr-skupovi" class="level3">
+<h3 class="anchored" data-anchor-id="sec-rlvr-skupovi">Skupovi podataka prikladni za RLVR u kodnim zadacima</h3>
+<p>Razvijena je raznolikost specijaliziranih kodnih skupova podataka za olakšavanje RLVR treniranja. Ovi skupovi podataka konstruiraju programerske probleme zajedno s determinističkim verifikatorima poput ulazno-izlaznih testnih slučajeva ili jediničnih testova, osiguravajući da se izlazi modela mogu automatski provjeriti za ispravnost.</p>
+<p>CodeContests je velik skup natjecateljskog programiranja s približno 13.300 problema za treniranje AlphaCode modela. TACO agregira zadatke s natjecateljskih platformi pokrivajući uobičajene teme poput sortiranja, dinamičkog programiranja i algoritama na grafovima. Eurus-2-RL je mješoviti skup za RL treniranje s 27.000 kodnih problema svi opremljeni verifikatorima. ACECode-87K je sintetički skup od otprilike 87.000 problema kreiranih putem automatiziranog generiranja testnih slučajeva. SYNTHETIC-1 je masivni skup s preko 1,4 milijuna zadataka koji obuhvaćaju matematiku, programiranje i softversko inženjerstvo. KodCode je najveći potpuno sintetički skup kodnih problema do danas s oko 48.400 trojki pitanje ili rješenje ili test. HardTests je skup natjecateljskog programiranja obogaćen visokokvalitetnim sintetiziranim testnim slučajevima za smanjenje lažno pozitivnih rezultata. Code-R1-12K je kurirani skup od 12.000 instanci kodnih problema sklopljen kao dio otvorenog Code-R1 projekta.</p>
+<p>Za vašu profesionalnu praksu, razumijevanje RLVR-a i ovih skupova podataka važno je iz jednog važnog razloga. Ova paradigma fundamentalno mijenja način na koji modeli uče kodirati. Umjesto da memoriraju obrasce iz trenirnih podataka, modeli razvijaju sposobnost rezoniranja, samoverifikacije i ispravljanja grešaka, sposobnosti koje se prenose na nove, neviđene probleme. Kada evaluirate model za kod, pitajte je li treniran samo sa SFT-om ili i s RLVR-om. Odgovor vam može reći koliko duboko model zaista razumije programiranje nasuprot tome koliko dobro reproducira obrasce koje je vidio tijekom treniranja. To je razlika između učenika koji je zapamtio odgovore i učenika koji je naučio razmišljati.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Za vašu profesionalnu praksu: Kodovi koji dolaze iz modela treniranog s RLVR-om strukturirano su drugačiji od onih iz SFT-samo modela. RLVR modeli razvijaju eksplicitne stratege razmišljanja, provjeravaju svoju logiku tijekom generiranja i ispravljaju se kada detektiraju greške, što su vještine koje se transferiraju na nove, neviđene scenarije. To je razlika između memoriranja i razumijevanja.</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sec-se-agenti" class="level1">
+<h1>Agenti za softversko inženjerstvo</h1>
+<p>Do sada smo govorili o modelima kao o alatima, daješ im zadatak, oni vrate odgovor. Ali što se dogodi kada model prestane biti alat i postane kolega? Zamislite da u vašem timu sjedi novi član koji ne samo da piše kod, nego i čita specifikacije, postavlja pitanja o zahtjevima, predlaže arhitekturu, piše testove, analizira zapisnike grešaka, pregledava tuđi kod i sudjeluje u planiranju sprinteva. Upravo to su agenti za softversko inženjerstvo (engl. <em>SWE Agents</em>), autonomni ili poluautonomni sustavi dizajnirani za podršku, automatizaciju ili poboljšanje tradicionalnih radnih procesa softverskog inženjerstva.</p>
+<p>Nedavni razvoji u velikim jezičnim modelima doprinijeli su pojavi ovih agenata, koji demonstriraju potencijal za učinkovitost, točnost i skalabilnost kroz čitav životni ciklus razvoja softvera <span class="citation" data-cites="jimenez2024swebench">Jimenez i ostali (<a href="#ref-jimenez2024swebench" role="doc-biblioref">2024</a>)</span>. Da bismo sustavno ispitali njihove sposobnosti i implikacije, SWE agente organiziramo prema njihovim zadacima unutar klasičnih faza vodopadnog modela, od analize zahtjeva i dizajna, preko razvoja softvera i testiranja, do postavljanja i održavanja.</p>
+<section id="sec-se-zivotni-ciklus" class="level2">
+<h2 class="anchored" data-anchor-id="sec-se-zivotni-ciklus">Agenti kroz životni ciklus softverskog inženjerstva</h2>
+<section id="sec-se-zahtjevi" class="level3">
+<h3 class="anchored" data-anchor-id="sec-se-zahtjevi">Inženjerstvo zahtjeva</h3>
+<p>Inženjerstvo zahtjeva čini ključnu disciplinu u softverskom inženjerstvu koja premošćuje zahtjeve dionika s tehničkim implementacijama, osiguravajući da isporučeni sustav ispunjava korisnička očekivanja. Zamislite to kao razgovor između arhitekta i obitelji koja želi sagraditi kuću. Obitelj kaže želimo puno svjetla i otvoreni plan, ali arhitekt mora te nejasne želje pretvoriti u precizne nacrte s dimenzijama, materijalima i instalacijama. Upravo to rade agenti u fazi zahtjeva.</p>
+<p><strong>Prikupljanje.</strong> Simulacija korisnika putem agenata pojavila se kao moćna paradigma. Elicitron generira raznolike simulirane korisničke agente koji autonomno interagiraju s ciljnim proizvodima, bilježeći svoja iskustva i pružajući strukturirane povratne informacije.</p>
+<p><strong>Ispitivanje i usklađivanje.</strong> Nakon prikupljanja, faza ispitivanja osigurava da su prikupljeni zahtjevi koherentni, izvedivi i razumljivi. Višeagentski sustavi pokazali su se učinkovitima u automatizaciji ovog analitičkog procesa. Jedan pristup simulira virtualni razvojni tim sastavljen od agenata s određenim ulogama koji suradnički generiraju, evaluiraju i rangiraju korisničke priče.</p>
+<p><strong>Modeliranje i formalizacija.</strong> U ovoj fazi zahtjevi se prevode u strukturirane, strojno interpretabilne reprezentacije od apstraktnih UML modela do konkretnih prototipova korisničkog sučelja. PrototypeFlow koordinira više specijaliziranih dizajnerskih agenata pod nadzornim koordinatorom. DCGen koristi multimodalne agentske kolektive koji interpretiraju snimke zaslona i generiraju funkcionalni kod.</p>
+</section>
+<section id="sec-se-razvoj" class="level3">
+<h3 class="anchored" data-anchor-id="sec-se-razvoj">Razvoj softvera</h3>
+<p><strong>Sinteza programa.</strong> Agenti za sintezu programa proširuju se izvan statičkog poticanja uključivanjem višekoračnog rezoniranja, verifikacije bazirane na testovima i petlji usavršavanja. Zamislite programera koji ne piše kod u jednom potezu, nego planira, piše, testira, pronalazi greške, popravlja ih i ponovo testira. Upravo taj ciklus simuliraju agenti za sintezu programa. AlphaCodium <span class="citation" data-cites="survey2025codefoundation">BUAA-SKLCCSE, Alibaba, ByteDance, M-A-P, BJTU, OPPO, HKUST (GZ), BUPT, TeleAI, Shanghai AI Lab, Manchester, StepFun, UoS, SCU, CASIA, NJU, Kuaishou, HIT, Huawei Cloud, Tencent, Monash/CSIRO, NTU, ZJU, BIT, Ubiquant, NUS, HNU, PKU, CSU (<a href="#ref-survey2025codefoundation" role="doc-biblioref">2025</a>)</span> potiče model da nacrta implementacije, analizira potencijalne nedostatke i regenerira poboljšana rješenja. MapCoder koordinira dohvatitelja, planera, kodera i uklanjatelja grešaka. ChatDev <span class="citation" data-cites="qian2024chatdev">Qian i ostali (<a href="#ref-qian2024chatdev" role="doc-biblioref">2024</a>)</span> i MetaGPT <span class="citation" data-cites="hong2024metagpt">Hong i ostali (<a href="#ref-hong2024metagpt" role="doc-biblioref">2024</a>)</span> proširuju ovu ideju simuliranjem višeuloških organizacija.</p>
+<p><strong>Tekst u SQL.</strong> Pretvaranje teksta u SQL igra kritičnu ulogu tijekom faze razvoja, omogućujući inteligentnim sustavima transformaciju zahtjeva na prirodnom jeziku u strukturirane upite baze podataka. DAIL-SQL razmatra i pitanja i SQL upite za odabir primjera. MAC-SQL i MCS-SQL usmjereni su na višeagentsku suradnju.</p>
+<p><strong>Generiranje komentara i pregled koda.</strong> Rani pristupi koristili su metode bazirane na mapiranju. Neuronski sekvenca-u-sekvencu modeli označili su pomak prema generativnim pristupima. Za automatizirani pregled koda, napredni agentski okviri uvode višeagentsku orkestraciju gdje specijalizirani agenti pregledavatelji simuliraju suradničke ljudske timove. Hydra-Reviewer uvodi paralelnu arhitekturu gdje se svaki agent fokusira na jednu dimenziju pregleda.</p>
+</section>
+<section id="sec-se-testiranje" class="level3">
+<h3 class="anchored" data-anchor-id="sec-se-testiranje">Testiranje softvera</h3>
+<p>Testiranje softvera je faza u kojoj se provjerava radi li sustav onako kako je zamišljen. Zamislite inspektora koji dolazi provjeriti novosagrađenu kuću. Ne provjerava samo izgleda li kuća lijepo, nego pritišće svaki prekidač, otvara svaku slavinu, penje se na svaki kat i namjerno pokušava pronaći ono što ne radi. Agenti za testiranje rade upravo to. ChatTester i ChatUniTest generiraju jedinične testove putem konverzacijskog pristupa. TestPilot automatizira generiranje testova za JavaScript projekte. CoverUp koristi iterativnu strategiju za poboljšanje pokrivanja koda testovima. Za fuzz testiranje, automatizirane tehnike koriste pojačano učenje. CKGFuzzer koristi grafove znanja za vođenje fuzz testiranja.</p>
+</section>
+<section id="sec-se-odrzavanje" class="level3">
+<h3 class="anchored" data-anchor-id="sec-se-odrzavanje">Održavanje softvera</h3>
+<p>Održavanje softvera obuhvaća aktivnosti nakon isporuke, uključujući lokalizaciju grešaka, generiranje zakrpi, rješavanje problema, analizu zapisnika, optimizaciju kompajlera, dekompilaciju i deobfuskaciju. AgentFL koristi višeagentski sustav koji simulira suradnički tim za uklanjanje grešaka. Za generiranje zakrpi, RepairAgent uvodi potpuno automatiziranoga agenta koji autonomno izvodi lokalizaciju grešaka, generiranje zakrpi i validaciju u jedinstvenoj petlji povratnih informacija. AutoCodeRover kombinira navigaciju apstraktnog sintaksnog stabla s analitičkim rezoniranjem.</p>
+</section>
+</section>
+<section id="sec-se-opci-agenti" class="level2">
+<h2 class="anchored" data-anchor-id="sec-se-opci-agenti">Opći kodovi agenti u softverskom inženjerstvu</h2>
+<p>Uz specijalizirane agente za pojedine faze, postoji čitava kategorija općih agenata koji funkcioniraju kao svestrani alati primjenjivi kroz više faza razvoja. <a href="https://github.com/All-Hands-AI/OpenHands">OpenHands</a> <span class="citation" data-cites="wang2024openhands">X. Wang i ostali (<a href="#ref-wang2024openhands" role="doc-biblioref">2024</a>)</span> pruža okvir s više podagenata za navigaciju, uređivanje i testiranje unutar izoliranog IDE-a. HyperAgent koristi četveročlani tim koji postiže vrhunske performanse na RepoBenchu alociranjem različitih modela za različite funkcije. SWE-Agent <span class="citation" data-cites="yang2024sweagent">Yang i ostali (<a href="#ref-yang2024sweagent" role="doc-biblioref">2024</a>)</span> pruža minimalističko ali učinkovito sučelje koje omugućuje LLM-u navigaciju repozitorijima, uređivanje datoteka i izvršavanje naredbi u terminalnom okruženju. AGENTLESS demonstrira da čak i pristup bez agenata može postići konkurentne rezultate.</p>
+</section>
+<section id="sec-se-treniranje" class="level2">
+<h2 class="anchored" data-anchor-id="sec-se-treniranje">Tehnike treniranja za SWE agente</h2>
+<p><strong>Fino ugađanje.</strong> Nadzirano fino ugađanje koristi kurirane parove ulaz/izlaz poput parova problem/zakrpa za učenje iz demonstracija. Ključni resursi uključuju SWE-smith koji pruža skalabilni cjevovod za generiranje instanci zadataka, SWE-Gym koji pruža Python instance s izvršivim okruženjima i RepoBench koji evaluira dovršavanje kroz tisuće repozitorija.</p>
+<p><strong>Pojačano učenje.</strong> RL pruža zasebnu paradigmu pomičući fokus s oponašanja statičkih skupova podataka na učenje optimalnih ponašanja kroz izravnu interakciju s okruženjem. Metode gradijenata politike izravno optimiziraju politiku odlučivanja. Izvanmrežno pojačano učenje uči iz fiksnog, unaprijed prikupljenog skupa interakcija. Metode bazirane na preferencijama poput RLHF-a optimalne su kada signal nagrade nije lako definiran. Ključna spoznaja je da uspješna primjena RL-a u SWE agentima rijetko je samostalni proces. Gotovo uvijek mu prethodi SFT koji služi kao kritična faza inicijalizacije.</p>
+</section>
+<section id="sec-se-buduca" class="level2">
+<h2 class="anchored" data-anchor-id="sec-se-buduca">Budući trendovi SWE agenata</h2>
+<p>Razvoj SWE agenata označava jasnu tehnološku putanju od automatizacije specifične za zadatke prema autonomnijim i integriranijim sustavima koji obuhvaćaju čitav životni ciklus razvoja softvera.</p>
+<p><strong>Od specijaliziranih agenata do orkestracije čitavog životnog ciklusa.</strong> Trenutni SWE agenti često djeluju u neovisnim fazama. Značajan budući smjer bit će razvoj integriranih agentskih okvira za čitav životni ciklus koji orkestriraju radne procese koji se bešavno prelijevaju iz jedne faze u sljedeću.</p>
+<p><strong>Duboko kontekstualno razumijevanje i dugoročna memorija.</strong> Trajni izazov za SWE agente je ograničeni kontekstni prozor LLM-ova. Budućnost leži u agentima koji mogu graditi i održavati trajne, dinamičke grafove znanja softverskih projekata.</p>
+<p><strong>Od suradnje do samoevolucije.</strong> Buduća istraživanja pomiču se od jednoagentskih sustava prema suradničkim višeagentskim ekosustavima. Gledajući dalje, agenti će steći sposobnost samoevolucije.</p>
+<p><strong>Sinergistička suradnja čovjeka i agenta.</strong> Najutjecajnija budućnost vjerojatno uključuje sinergističku suradnju čovjeka i agenta, a ne potpunu autonomiju. Umjesto da zamjenjuju programere, agenti će evoluirati u proaktivne inteligentne programere u paru.</p>
+<p><strong>Povjerenje, sigurnost i provjerljivost po dizajnu.</strong> Kako SWE agenti stječu više autonomije i dobivaju veći pristup produkcijskim sustavima, osiguravanje da su njihove akcije sigurne i provjerljive postaje ključna briga.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Za vašu profesionalnu praksu: SWE agenti neće zamijeniti programere, ali će fundamentalno promijeniti što znači biti programer. Sposobnost suradnje s autonomnim agentima, razumijevanja njihovih mogućnosti i ograničenja te učinkovitog vođenja njihovog rada postat će jednako važna vještina kao što je danas poznavanje programskog jezika ili razvojnog okvira.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-generalisticki-agenti" class="level1">
+<h1>Kod za generalističke agente</h1>
+<p>U prethodnom poglavlju govorili smo o agentima specijaliziranim za softversko inženjerstvo, sustavima koji pišu, testiraju i popravljaju kod unutar jasno definiranih razvojnih procesa. Sada podižemo pogled na širu sliku. Zamislite razliku između kirurga koji operira u operacijskoj sali i planinara koji se snalazi u divljini bez mape, bez staze, bez jasnog cilja osim preživjeti i napredovati. Generalistički agenti su ti planinari. Oni koriste kod ne samo za pisanje softvera, nego kao univerzalni medij koji im omogućuje razmišljanje o problemima i izvršavanje akcija kroz mnogo različitih zadataka i okruženja, umjesto da budu ograničeni na jednu specijaliziranu funkciju.</p>
+<p>Integracija koda postala je ključna paradigma u razvoju generalističkih agenata, omogućujući kombinaciju kognitivnog rezoniranja s izvršivim akcijama kroz raznolike sredine. Ovaj odjeljak sintetizira nedavni napredak u korištenju koda izvan njegove konvencionalne uloge, naglašavajući tri dimenzije u arhitekturi agenata. Prva su protokoli interakcije, gdje kod uspostavlja strukturirane komunikacijske okvire uključujući obrasce korištenja alata, protokol konteksta modela (engl. <em>Model Context Protocol</em> ili MCP) i sheme koordinacije više agenata (engl. <em>Agent-to-Agent</em> ili A2A). Druga su agentske sposobnosti, gdje pristupi vođeni kodom omogućuju agentima generiranje i izvršavanje koda za složenu logiku, manipulaciju podatcima i zadatke softverskog inženjerstva. Treća su sučelja okruženja, gdje kod podupire i simulirana okruženja i sučelja prema stvarnom svijetu, nudeći skalabilne i provjerljive platforme za treniranje, evaluaciju i postavljanje agenata.</p>
+<section id="sec-protokoli" class="level2">
+<h2 class="anchored" data-anchor-id="sec-protokoli">Kod kao protokoli interakcije</h2>
+<section id="sec-koristenje-alata" class="level3">
+<h3 class="anchored" data-anchor-id="sec-koristenje-alata">Korištenje alata</h3>
+<p>Zamislite majstora u radionici. Oko njega su stotine alata, od čekića i pile do sofisticiranih elektroničkih instrumenata. Ono što ga čini majstorom nije samo znanje o svakom alatu, nego sposobnost da u pravom trenutku odabere pravi alat, pravilno ga uporabi i interpretira rezultat. Upravo tu analogiju možemo primijeniti na LLM agente koji koriste alate. U radnim procesima agenata baziranih na LLM-ovima, svaki alat je u osnovi utjelovljen u kodu koji služi kao formalni supstrat definirajući i sintaksno sučelje i semantičku logiku funkcionalnosti alata. Pozivanje funkcija (engl. <em>function calling</em>) djeluje kao središnji mehanizam, pružajući LLM-ovima strukturirano sučelje za interakciju s izvršivim kodom ili vanjskim uslugama.</p>
+<p>Metode pozivanja funkcija mogu se široko kategorizirati u pristupe bez ugađanja i pristupe s ugađanjem. Pristupi bez ugađanja koriste sposobnosti učenja iz konteksta kod LLM-ova, tipično koristeći demonstracije s malo uzoraka ili usavršavanja bazirana na pravilima. Reverse Chain primjerice usvaja strategiju obrnutog rezoniranja koja najprije identificira odgovarajući ciljni alat za dani zadatak, a zatim popunjava relevantne parametre. EasyTool pojačava razumijevanje funkcija alata i zahtjeve parametara poticanjem ChatGPT-a da prepiše dugačke opise alata u sažete smjernice orijentirane na funkcije. Pristupi s ugađanjem poboljšavaju pozivanje funkcija kroz fino ugađanje parametara s namjenskim skupovima podataka za učenje alata. GPT4Tools integrira sposobnosti korištenja alata u LLM-ove otvorenog koda putem LoRA finog ugađanja, koristeći skupove podataka o upotrebi alata automatski generirane od strane ChatGPT-a. ToolkenGPT uvodi specijalizirane tokene, nazvane toolkeni, koji djeluju kao okidači za pozivanje alata.</p>
+<p>Pozivanje funkcija služi kao temeljni mehanizam u raznim paradigmama agenata obogaćenih alatima <span class="citation" data-cites="yao2023react">Yao i ostali (<a href="#ref-yao2023react" role="doc-biblioref">2023</a>)</span>. Okvir ReAct implementira pozive funkcija tijekom faze akcije, gdje model eksplicitno ispisuje naziv alata i parametre za pokretanje poziva, nakon čega slijedi faza promatranja u kojoj se odgovori alata integriraju za vođenje naknadnog rezoniranja. ReWOO nasuprot tome ima dvostupanjsku strukturu s fazom planiranja koja sastavlja strukturiranu listu potrebnih poziva funkcija i fazom izvršavanja u kojoj agenti radnici pozivaju funkcije, izvršavaju zadatke i vraćaju rezultate. Za rukovanje nesigurnošću i neuspjelim pozivima, DERA uvodi ciklički protokol interakcije. Kada se suoči s dvosmislenim uputama, model suspendira izvršavanje, ulazi u pojašnjavajući dijalog s korisnikom i nastavlja pozive funkcija nakon što stekne dovoljno informacija.</p>
+</section>
+<section id="sec-mcp" class="level3">
+<h3 class="anchored" data-anchor-id="sec-mcp">Protokol konteksta modela (MCP)</h3>
+<p>Protokol konteksta modela je standardizirani komunikacijski okvir dizajniran za koordinaciju interakcija između modela i vanjskih alata. Za razliku od autonomnog korištenja alata koje u potpunosti ovisi o internom rezoniranju, MCP uvodi strukturirane formate poruka, eksplicitnu semantiku pozivanja i dobro definirane mehanizme za upravljanje stanjima konteksta. Zamislite to kao standardizirani jezik kojim govore svi alati i svi modeli, poput engleskog jezika u međunarodnoj diplomaciji. Bez zajedničkog protokola, svaki par model i alat morao bi imati vlastiti prilagođeni način komunikacije, što bi bilo neodrživb pri skaliranju. Operativni ciklus MCP-a sastoji se od četiri faze: zahtjev, odgovor, ažuriranje stanja i ponovni poziv. Zajedno, ove faze tvore proces zatvorene petlje koji povezuje izvršavanje alata s kontinuiranim upravljanjem kontekstom, čime poboljšavaju pouzdanost, interpretabilnost i skalabilnost dovršavanja zadataka kroz više krugova. MCP je otvoren standard koji omogućuje kompozibilnost, dopuštajući graditeljem agenata da integrira više različitih alata i usluga kroz jedinstveni protokol.</p>
+</section>
+<section id="sec-koordinacija-agenata" class="level3">
+<h3 class="anchored" data-anchor-id="sec-koordinacija-agenata">Koordinacija više agenata</h3>
+<p>Agent-to-Agent ili A2A je suradnički obrazac u kojem agenti komuniciraju izravno jedni s drugima za ostvarivanje složenih zadataka. Umjesto da se oslanjaju na autonomno rezoniranje jednog agenta, A2A dekompozira zadatke među specijaliziranim agentima koji koordiniraju pozivanje alata i obradu informacija kroz prosljeđivanje poruka i dijeljeni kontekst. Zamislite tim specijalista u bolnici. Svaki liječnik ima svoju ekspertizu, ali zajedno donose odluke o liječenju pacijenta kroz konzilij, dijeleći nalaze i raspravljajući o opcijama. Upravo tako funkcionira A2A, agenti u ovoj paradigmi mogu pozivati vanjske alate i interagirati s kolegama agentima za popunjavanje praznina u znanju ili kompenziranje ograničenja, čime poboljšavaju i učinkovitost i točnost rješavanja problema.</p>
+</section>
+</section>
+<section id="sec-agentske-sposobnosti" class="level2">
+<h2 class="anchored" data-anchor-id="sec-agentske-sposobnosti">Kod kao agentske sposobnosti</h2>
+<p>AI agenti su stekli znatan istraživački interes, popraćen rastućim naporima za karakterizaciju njihovih temeljnih sposobnosti. ReAct paradigma strukturira ponašanje agenta u tri faze: misao (rezoniranje, planiranje i donošenje odluka), akcija (izvršavanje odluka) i promatranje (primanje povratnih informacija iz okruženja za naknadne odluke). Ovaj odjeljak analizira ulogu LLM-ova baziranih na kodu unutar arhitekture agenata iz tri perspektive: razmišljanje, djelovanje i pamćenje.</p>
+<section id="sec-razmisljanje-kodu" class="level3">
+<h3 class="anchored" data-anchor-id="sec-razmisljanje-kodu">Razmišljanje u kodu</h3>
+<p>Kada se suočavaju sa složenim zadacima rezoniranja, LLM-ovi značajno profitiraju od tehnika generiranja koda koje poboljšavaju i preciznost i učinkovitost. Zamislite razliku između studenta koji pokušava izračunati složen integral u glavi i studenta koji napiše program koji ga izračunava. Drugi student ne mora držati sve međukorake u radnoj memoriji, jer ih je eksternalizirao u kod koji se može izvršiti i provjeriti. Koncept rezoniranja pomoću koda inicijalno je nastao u domeni matematičkog rješavanja problema. Programski potpomognuti jezični modeli (engl. <em>Program-Aided Language Models</em> ili PAL) koriste učenje iz malo uzoraka i poticanje lanca misli za generiranje Python koda koji izvršava međukorake rezoniranja uključujući matematičke operacije, simboličku manipulaciju i algoritmičku logiku. Ovaj pristup omogućuje točnije ishode kroz verifikaciju baziranu na izvršavanju.</p>
+<p>Izvan matematičkog rješavanja problema, lanac koda (engl. <em>Chain of Code</em> ili CoC) okvir rezoniranja proširuje kodovno bazirano rezoniranje na numeričke i opće semantičke zadatke. LLM-ovi generiraju i izvršavaju isječke koda pod vodstvom upita, olakšavajući strukturirano rješavanje problema. Za numeričke zadatke, CoC omogućuje precizno računanje kroz izvršivi kod. Za semantičko rezoniranje koristi pseudokod sastavljen od struktura podataka, uvjeta i petlji za modeliranje apstraktnih procesa rezoniranja. Osim podržavanja rezoniranja za jedan zadatak, tehnike generiranja koda igraju ključnu ulogu u planiranju za više zadataka. CodePlan formulira planiranje zadataka eksplicitno u kodu, čime smanjuje dvosmislenost iz uputa na prirodnom jeziku i poboljšava performanse u složenim zadacima višekoraknog rezoniranja. Za višeagentske scenarije, namjenski planer generira planove pseudokoda u stilu Pythona koji obuhvaćaju inicijalizaciju varijabli, uvjetnu logiku i iterativne strukture, transformirajući ih u izvršive CodeAct instrukcije.</p>
+</section>
+<section id="sec-djelovanje-kodu" class="level3">
+<h3 class="anchored" data-anchor-id="sec-djelovanje-kodu">Djelovanje u kodu</h3>
+<p>Kada se koristi unutar izvršnog modula agenta, kod se mora povezati s alatima na razini sustava putem standardiziranih agentskih protokola <span class="citation" data-cites="schick2023toolformer">Schick i ostali (<a href="#ref-schick2023toolformer" role="doc-biblioref">2024</a>)</span>. GPT-4 Code Interpreter omogućuje modelima izvršavanje koda za napredne zadatke rezoniranja. Open Interpreter predstavlja okvir otvorenog koda koji omogućuje jezičnim modelima lokalno izvršavanje koda kroz više jezika, uključujući Python, JavaScript i Shell. CodeAct uvodi koncept koji omogućuje interaktivne operacije generiranjem izvršivog Python koda, eliminirajući potrebu za prilagođenim omotačima alata izravnom integracijom izvršavanja koda s Python interpretatorom. Ovaj pristup nudi bogatiju podršku za tok kontrole i upravljanje podatcima, omogućujući pohranjivanje međurezultata kao varijabli i njihovo ponovno korištenje kroz korake.</p>
+<p>Zanimljiv je nalaz o tome kako LLM-ovi s različitim sposobnostima rezoniranja odlučuju hoće li pozvati Code Interpreter. Eksperimenti na zadacima matematičkog rezoniranja otkrivaju kontraintuitivan trend. Manje sposobni modeli poput GPT-3.5 skloniji su korištenju Code Interpretera i posljedično postižu višu točnost. Nasuprot tome, sposobniji modeli poput GPT-4o teže se osloniti na vlastite interne sposobnosti rezoniranja i preferiraju tekstualno rezoniranje, često pokazujući pretjerano samopouzdanje koje vodi do povećanih grešaka na umjereno teškim problemima, fenomen nazvan efekt inverznog skaliranja. Za praktične primjene, nekoliko studija ispituje konkretne slučajeve uporabe. U zdravstvenom sektoru, EHRAgent omogućuje medicinskom osoblju izravno generiranje izvršivog koda putem LLM-ova za višetablično rezoniranje nad elektroničkim zdravstvenim zapisima. U domeni utjelovljene inteligencije, LLM generirani kod koristi se za upravljanje robotskim sustavima, omogućujući agentima pretvaranje uputa visoke razine u precizne izvršive akcije.</p>
+</section>
+<section id="sec-pamcenje-kodu" class="level3">
+<h3 class="anchored" data-anchor-id="sec-pamcenje-kodu">Pamćenje kodom</h3>
+<p>Kao odgovor na ograničenja duljine konteksta kod LLM-ova, istraživači su istražili razne strategije pohrane, među kojima je pohrana bazirana na kodu pokazala zapaženu učinkovitost <span class="citation" data-cites="wang2024voyager">G. Wang i ostali (<a href="#ref-wang2024voyager" role="doc-biblioref">2023</a>)</span>. Zamislite programera koji svaki put kada nauči nešto novo zapisuje rješenje u vlastitu biblioteku funkcija. Sljedeći put kada naiđe na sličan problem, ne mora razmišljati od nule, samo pozove gotovu funkciju iz svoje biblioteke. Upravo tako funkcionira pamćenje kodom. Voyager primjerice implementira okvir u kojem agenti autonomno stječu vještine generiranjem i iterativnim usavršavanjem koda kroz interakcije s okruženjem u Minecraftu. Validirane vještine pohranjuju se kao izvršivi kod u namjenskoj biblioteci i kasnije se izravno dohvaćaju za ponovnu uporabu, čime se eliminira potreba za ponovljenim zaključivanjem modela. MemGPT <span class="citation" data-cites="peng2023memgpt">Peng i ostali (<a href="#ref-peng2023memgpt" role="doc-biblioref">2023</a>)</span> predlaže okvir upravljanja kontekstom inspiriran virtualnom memorijom koji proširuje efektivnu memoriju LLM-ova dizajniranjem specijaliziranih poziva funkcija za čitanje i pisanje radi dinamičkog upravljanja i internim i vanjskim kontekstom.</p>
+</section>
+</section>
+<section id="sec-suelja-okruzenja" class="level2">
+<h2 class="anchored" data-anchor-id="sec-suelja-okruzenja">Kod kao sučelja okruženja</h2>
+<section id="sec-simulacijski-poligon" class="level3">
+<h3 class="anchored" data-anchor-id="sec-simulacijski-poligon">Kod kao simulacijski poligon</h3>
+<p>S napretkom sposobnosti rezoniranja LLM-ova i rastućom raznolikošću zadataka rezoniranja, evaluacija i kultiviranje vještina dugoročnog planiranja postala je važan izazov. Tradicionalna jednokružna mjerila rezoniranja nedovoljna su za procjenu ili treniranje takvih sposobnosti. Da bi se riješilo ovo ograničenje, predložen je koncept koda kao simulacijskog poligona (engl. <em>Code as Simulation Gym</em> ili CodeGYM), izgrađen na Gymnasium platformi za pojačano učenje. CodeGYM konstruira raznovrsna složena okruženja zadataka koja omogućuju modelima kontinuiranu interakciju, održavanje i ažuriranje stanja te primanje povratnih informacija ili nagrada.</p>
+<p><strong>Dinamički poligon za zagonetke.</strong> Ova obitelj sustava za generiranje zagonetki baziranih na pravilima dizajnirana je za automatsku konstrukciju skupova podataka za rezoniranje velikog razmjera i provjerljive ispravnosti. Rani sustavi poput LogicGamea i KORBencha prezentiraju raznolike logičke zagonetke koje zahtijevaju od modela interpretaciju početnih stanja i primjenu specificiranih pravila. Napredniji sustavi koriste strategije transformacije i mehanizme ograničenja za proizvodnju složenih kombinatoričkih zadataka rezoniranja.</p>
+<p><strong>Sintetički prostorni poligon.</strong> Ovo je okvir za sintetičko generiranje podataka dizajniran za stvaranje prilagođenih skupova podataka za treniranje i evaluaciju LLM-ova na zadacima prostornog rezoniranja, čime se eliminiraju visoki troškovi povezani s prikupljanjem slika iz stvarnog svijeta. Rani primjeri uključuju mjerila za robotsko učenje, scenarije manipulacije iz stvarnog svijeta i višezadaćna okruženja. S napretkom LLM-ova pojavile su se specijalizirane platforme za podršku prostornom rezoniranju.</p>
+<p><strong>Igračka arena.</strong> GameArena je klasa CodeGYM platformi dizajniranih za evaluaciju i treniranje sposobnosti dugoročnog planiranja i strateškog rezoniranja velikih jezičnih modela kroz interaktivna okruženja bazirana na igrama. Rani sustavi izgrađeni su na postojećim komercijalnim igrama uključujući StarCraft II, Minecraft i Black Myth Wukong. Naknadni rad proširio je paradigmu na igre socijalne dedukcije poput Avalona i Vukodlaka te narativne postavke igranja uloga, naglašavajući sposobnosti modela u strateškoj interakciji i socijalnom zaključivanju.</p>
+</section>
+<section id="sec-agenti-koriste-racunala" class="level3">
+<h3 class="anchored" data-anchor-id="sec-agenti-koriste-racunala">Agenti za korištenje računala</h3>
+<p>Kako LLM-ovi i vizualno-jezični modeli stječu jače sposobnosti rezoniranja, agenti sve više mogu autonomno djelovati u digitalnim okruženjima. Ovaj napredak doveo je do pojave agenata za korištenje računala, tipično kategoriziranih u tri vrste.</p>
+<p><strong>Agenti grafičkog sučelja (GUI agenti).</strong> GUI agenti interagiraju sa svojim okruženjima analizom sadržaja zaslona i generiranjem strukturiranih naredbi akcija u JSON formatu ili izvršivog koda za automatizaciju zadataka. Modul percepcije igra važnu ulogu obradom trenutnog stanja zaslona i històrijskog konteksta za omogućavanje korak po korak rezoniranja. Strategije percepcije uključuju tekstualne pristupe koji se oslanjaju na HTML strukture ili stabla pristupačnosti, slikovne pristupe koji se fokusiraju na interpretaciju vizualnog sadržaja izravno i multimodalne pristupe koji kombiniraju prednosti obaju modaliteta. Modul interakcije određuje prostor akcija agenta, prihvaća valjane naredbe i izvršava ih. Dvije glavne strategije su simulacija ljudskih akcija koja oponaša korisničke operacije uključujući klikove mišem i unos tipkovnice te interakcija bazirana na alatima koja izravno poziva programska sučelja ili izvršava skripte za postizanje veće učinkovitosti.</p>
+<p><strong>Agenti terminala.</strong> Agenti terminala interagiraju s okruženjima putem sučelja terminala ili ljuske, gdje prevode korisničke upute u kod naredbenog retka i izvršavaju ga. OB-1 gradi ansambl agenata opremljen dijeljenom memorijom, mehanizmima povratnih informacija i poticaja. Koristi trajne memorijske blokove za pohranu zadataka, bilješki i stavki za obaviti kroz dulja razdoblja, podržavajući uredive povijesti za ažuriranje prethodnog rezoniranja. Warp održava uredivu listu zadataka koja se dinamički ažurira s napretkom zadataka ili kada nastanu odstupanja.</p>
+<p><strong>Agenti za više okruženja.</strong> Agenti za više okruženja integriraju se s raznim sustavima putem mehanizma kodnih akcija, omogućujući interakciju kroz preglednike, terminale, izvršitelje koda i sustave datoteka. Manus koristi okvir preglednika i programska sučelja za dohvat podataka s interneta, izvršavajući kod u izoliranom virtualnom stroju za generiranje odgovora baziranih na HTML-u. OpenAI Deep Research pretražuje i interpretira sadržaj weba velikog razmjera, uključujući tekst, slike i PDF dokumente, za generiranje sveobuhvatnih izvješća. OpenManus kombinira planiranje vođeno LLM-om s izvršavanjem alata u višeagentskom sustavu, dok OWL gradi okvir višestrukih agenata baziran na ulogama koji integrira specijalizirane agente i podržava više pretraživača i formata datoteka.</p>
+<p>Za vašu profesionalnu praksu, ovo poglavlje otkriva jednu fundamentalnu istinu. Kod prestaje biti samo proizvod i postaje medij mišljenja, djelovanja i pamćenja za umjetnu inteligenciju. Kada agent razmišlja u kodu, djeluje u kodu i pamti u kodu, granice između programiranja i inteligencije postaju nejasne. Razumijevanje ove promjene važno je jer će odrediti kakve će alate koristiti sljedeća generacija programera i kakve će sposobnosti od njih zahtijevati. Tko razumije kako agenti koriste kod kao univerzalni medij, razumjet će i zašto budućnost softverskog inženjerstva izgleda fundamentalno drugačije od sadašnjosti.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Za vašu profesionalnu praksu, ovo poglavlje otkriva jednu fundamentalnu istinu. Kod prestaje biti samo proizvod i postaje medij mišljenja, djelovanja i pamćenja za umjetnu inteligenciju. Kada agent razmišlja u kodu, djeluje u kodu i pamti u kodu, granice između programiranja i inteligencije postaju nejasne. Razumijevanje ove promjene važno je jer će odrediti kakve će alate koristiti sljedeća generacija programera i kakve će sposobnosti od njih zahtijevati.</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sec-sigurnost" class="level1">
+<h1>Sigurnost kodnih LLM-ova</h1>
+<p>Zamislite da angažirate građevinskog inženjera koji projektira prekrasne mostove. Svaki most izgleda odličan, svaki detalj je estetski dotjeran. Ali postoji problem. Otprilike svaki drugi most koji dizajnira ima skrivenu strukturalnu slabost koju nitko ne primjećuje dok most ne počne nositi promet. To je, u grubo prevedenom obliku, situacija s velikim jezičnim modelima za kod. Oni transformiraju razvoj softvera. No kako njihove sposobnosti kodiranja napreduju, sigurnost generiranog koda postaje sve veća zabrinutost. Empirijske studije sustavno otkrivaju da otvoreni modeli poput Qwen3 i DeepSeek-R1 često isporučuju nesigurna rješenja. Štoviše, napredne tehnike neprijateljskog poticanja mogu navesti modele da proizvode funkcionalno ispravan ali suptilno ranjiv kod.</p>
+<p>Sigurnosni krajolik kodnih LLM-ova predstavlja jedinstvene izazove različite od tradicionalnih softverskih ranjivosti, jer ovi modeli mogu propagirati i pojačati nesigurne obrasce kodiranja naučene iz svojih podataka za treniranje. Ovaj odjeljak pruža sveobuhvatan pregled izazova sigurnosti kodnih LLM-ova i strategija ublažavanja, organizirajući raspravu oko četiri kritična aspekta: sigurnost pretreniranja, sigurnost posttreniranja, evaluacija crvenog tima (engl. <em>red-teaming</em>), i sigurnost kodnih agentskih sustava.</p>
+<section id="sec-sigurnost-pretreniranje" class="level2">
+<h2 class="anchored" data-anchor-id="sec-sigurnost-pretreniranje">Sigurnost pretreniranja kodnih LLM-ova</h2>
+<p>Faza pretreniranja uspostavlja temeljne sigurnosne karakteristike kodnih LLM-ova, čineći je kritičnom fazom za ugradnju sigurnosnih razmatranja u ponašanje modela. U korijenu, temelj nesigurnosti modela leži u podatcima za pretreniranje. Kodni LLM-ovi trenirani su na javnim repozitorijima gdje su nesigurni obrasci kodiranja uobičajeni. Zamislite studenta koji uči kuhati gledajući tisuće video zapisa na internetu. Većina tih videa pokazuje kuhare koji ne peru ruke, ne paze na temperature i koriste iste daske za meso i povrće. Student će naučiti pripremiti ukusna jela, ali s užasnim higijenskim navikama. Upravo to se događa modelima koji uče iz neprovjerenih repozitorija.</p>
+<section id="sec-sigurnost-licenciranje" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-licenciranje">Porijeklo podataka, sigurnost i usklađenost s licencama</h3>
+<p>Sigurnost i pouzdanost kodnih LLM-ova fundamentalno su ukorijenjene u sigurnosti i legitimnosti njihovih korpusa za pretreniranje. Primarna zabrinutost je ublažavanje pravnih i etičkih rizika, posebno nenamjernog uključivanja koda pod restriktivnim licencama ili licencama s obvezom dijeljenja pod istim uvjetima (engl. <em>copyleft</em>). Pionirski napori poput BigCode projekta razvili su sustavne pristupe za kuriranje podataka. The Stack pruža 6.4 terabajta permisivno licenciranog koda nakon opsežne deduplikacije. StarCoder je dodatno usavršio ovaj pristup implementacijom sveobuhvatne strategije upravljanja podatcima.</p>
+</section>
+<section id="sec-sigurnost-čišćenje" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-čišćenje">Revizija i čišćenje podataka za treniranje</h3>
+<p>Nakon osiguravanja sigurnosti izvora podataka, sigurnost korpusa korištenih u pretreniranju jednako je ključna. Heuristički filtri koriste pravila obrazaca za otkrivanje poznatih iskorištivih ranjivosti. Drugi pristup uključuje postavljanje klasifikatora visokog kapaciteta koji funkcioniraju kao detektori sigurnosti. Sintetički primjeri odbijanja koriste se za pretvaranje opasnih upita u sigurna odbijanja.</p>
+</section>
+<section id="sec-sigurnost-transformacije" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-transformacije">Robusnost protiv neprijateljskih transformacija koda</h3>
+<p>Kritična dimenzija sigurnosti kodnih LLM-ova je robusnost protiv neprijateljskih napada koji specifično iskorištavaju jedinstvena svojstva izvornog koda. Za razliku od prirodnog jezika, formalna sintaksa i struktura programskih jezika stvaraju posebnu površinu napada, sintaksne transformacije koje čuvaju semantiku. Istraživanja su demonstrirala da se jednostavni zlonamjerni upiti koje sigurnosni filtri odbijaju mogu uspješno prikriti obfuskacijama specifičnim za kod. Primarna obrambena paradigma je neprijateljsko treniranje kroz proširenje podataka.</p>
+</section>
+</section>
+<section id="sec-sigurnost-posttreniranje" class="level2">
+<h2 class="anchored" data-anchor-id="sec-sigurnost-posttreniranje">Sigurnost posttreniranja kodnih LLM-ova</h2>
+<p>Predominantni cilj pretreniranja kodnih LLM-ova ne usklađuje se dobro s generiranjem sigurnog koda. Ova paradigma potiče modele da uče i repliciraju uobičajene obrasce kodiranja iz golemih, nekuriranih skupova podataka, bez obzira na njihove sigurnosne implikacije. Zamislite liječnika koji zna sve o sterilizaciji instrumenata iz udžbenika ali u praksi nikada ne pere ruke jer je tako naučio gledajući starije kolege. Evaluacije koda generiranog LLM-ovima dosljedno otkrivaju visoke stope ranjivosti, pri čemu neke studije izvještavaju da otprilike 40% generiranih programa sadrži sigurnosne nedostatke.</p>
+<section id="sec-sigurnost-podatci" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-podatci">Podatci kao temelj za sigurnost</h3>
+<p>Temelj svakog robustnog, sigurnosno usklađenog kodnog LLM-a su podatci iz kojih uči. Prevladavajuće metodologije za konstrukciju sigurnosno usmjerenih skupova podataka mogu se kategorizirati u tri paradigme. Prva je rudarenje parova popravaka ranjivosti iz softverskih repozitorija stvarnog svijeta povezivanjem predaja s bazom poznatih ranjivosti (CVE), čime su stvoreni skupovi podataka poput CVEfixes i BigVul. Druga je sintetičko generiranje podataka koje koristi vještog učiteljskog LLM-a za stvaranje golemih količina visokokvalitetnih, ciljanih instanci. Treća je destilacija podataka preferencija, konstruiranje trojki upita, odabranog sigurnog odgovora i odbačenog nesigurnog odgovora.</p>
+</section>
+<section id="sec-sigurnost-sft" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-sft">Sigurnosno nadzirano fino ugađanje</h3>
+<p>SFT baziran na sadržaju, gdje se model fino ugađa na parovima ranjivog i ispravljenog koda, učinkovit je. SFT baziran na uputama, gdje se model trenira na uputama koje eksplicitno opisuju sigurnosni zadatak, poboljšava sposobnost modela za prijenos naučenog znanja u nove kontekste. Najdinamičniji pristup je SFT baziran na povratnim informacijama koji integrira vanjske alate u petlju treniranja, koristeći alate za statičko testiranje sigurnosti aplikacija, jedinične testove ili metode formalne verifikacije.</p>
+</section>
+<section id="sec-sigurnost-rl" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-rl">Sigurnosno usklađivanje kodiranja putem pojačanog učenja</h3>
+<p>Pojačano učenje nudi moćnu paradigmu za dinamičko usklađivanje kodnih LLM-ova sa složenim sigurnosnim ciljevima. RLHF je predominantni pristup u tri faze. Safe RLHF dodatno usavršava ovo razdvajanjem procesa optimizacije, trenirajući zasebne modele za korisnost (nagrada) i neškodljivost (trošak). Konstruiranje robustnih signala nagrade uključuje provjerljive povratne informacije iz alata (kompiliranje, prolaz testova, alati za statičku analizu), povratne informacije generirane AI-jem i hibridne arhitekture nagrada.</p>
+</section>
+</section>
+<section id="sec-sigurnost-crveni-tim" class="level2">
+<h2 class="anchored" data-anchor-id="sec-sigurnost-crveni-tim">Tehnike crvenog tima za kodne LLM-ove</h2>
+<p>Procjena sigurnosti kodnih LLM-ova postaje sve izazovnija kako se pojavljuju nove neprijateljske tehnike. Zamislite to kao igricu mačke i miša u kojoj napadači neprestano pronalaze nove rupe u ogradi, a branitelji ih pokušavaju zatvoriti. No svaka nova ograda ima nove šavove, i upravo te šavove napadači najprije ispituju.</p>
+<section id="sec-sigurnost-upiti" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-upiti">Manipulacija na razini upita</h3>
+<p>Ova kategorija obuhvaća napade koji konstruiraju neprijateljske ulaze dizajnirane za podrivanje sigurnosnog usklađivanja modela. Heuristički jailbreaking koristi scenarije igranja uloge u kojima se model upućuje da usvoji personu lišenu uobičajenih etičkih ograničenja. Napadi neprijateljske optimizacije formuliraju generiranje neprijateljskih upita kao problem optimizacije. GCG algoritam koristi informacije o gradijentima za iterativno usavršavanje sekvence znakova. Konverzacijski i višekružni napadi distribuiraju napad kroz više koraka dijaloga.</p>
+</section>
+<section id="sec-sigurnost-semantika" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-semantika">Semantička i kontekstualna manipulacija</h3>
+<p>Ova sofisticiranija klasa napada iskorištava nesklad između sintaksnog filtriranja i semantičkog razumijevanja. Iskorištavanje granice povjerenja nastaje kada protivnik pruži bezopasnu naredbu visoke razine dok ugrađuje stvarni zlonamjerni sadržaj unutar izvora podataka. Neizravno ubacivanje upita je napad posebno kritičan za agentske sustave koji interagiraju s vanjskim podatcima. Obfuskacija i međujezični napadi ciljaju zaobilaženje sigurnosnih modela.</p>
+</section>
+<section id="sec-sigurnost-agenti-napadi" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-agenti-napadi">Manipulacija agentskog tijeka rada</h3>
+<p>Pojava LLM agenata koji mogu izvršavati alate i interagirati sa živim okruženjima uvodi novu površinu napada fokusiranu na subverziju akcija. Zlouporaba alata i ubacivanje zlonamjernih argumenata nastaje kada protivnik oblikuje upite koji navode agenta da proslijedi zlonamjerne, nesanitarizirane argumente. Bijeg iz izoliranog okruženja (engl. <em>sandbox escape</em>) usmjerava agenta da generira i izvrši kod koji ispituje i iskorištava ranjivosti. Automatizirano iskorištavanje ranjivosti predstavlja vrhunac agentskih sposobnosti.</p>
+</section>
+</section>
+<section id="sec-sigurnost-ublazavanje" class="level2">
+<h2 class="anchored" data-anchor-id="sec-sigurnost-ublazavanje">Strategije ublažavanja za rizike kodiranja</h2>
+<p>Za rješavanje višestrukih rizika koje predstavljaju autonomni i poluautonomni agenti koji generiraju kod, ključna je robusna, višeslojna sigurnosna paradigma. Okvir obrane u dubinu (engl. <em>Defense-in-Depth</em>) pomiče fokus od pukog validiranja ispravnosti koda prema holističkom upravljanju ponašanjem agenata kroz tri međuovisna sloja.</p>
+<section id="sec-sigurnost-okruženja" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-okruženja">Temelji u sigurnim okruženjima za izvršavanje</h3>
+<p>Prva linija obrane je uspostavljanje stroge izolacijske granice koja ograničava potencijalni utjecaj agenta. Spektar izolacijskih tehnologija uključuje kontejnere na razini operativnog sustava poput Dockera, izolirane okruženja na razini procesa poput nsjaila, i mikro virtualne strojeve poput Firecrackera koji nude izolaciju blizu hardverske razine. Kritično ograničenje ovih pristupa je njihova statična priroda jer unaprijed definirana politika često stvara jaz sposobnosti.</p>
+</section>
+<section id="sec-sigurnost-validacija" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-validacija">Proaktivna obrana i validacija prije izvršavanja</h3>
+<p>Drugi sloj obrane fokusira se na preventivnu provjeru artefakata i planova generiranih od strane agenata prije njihovog izvršavanja. Modernizirane analize koda integriraju alate za statičko i dinamičko testiranje sigurnosti aplikacija u ciklus povratnih informacija. Višeagentski pregled i suradnja, inspirirani ljudskim praksama poput pregleda koda, koriste razne suradničke obrasce. Formalne metode i verifikacija namjere predstavljaju najrigorozniji oblik validacije prije izvršavanja.</p>
+</section>
+<section id="sec-sigurnost-nadzor" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sigurnost-nadzor">Nadzor u izvršavanju i utemeljenje namjere</h3>
+<p>Završni obrambeni sloj rješava rizike koji se dinamički manifestiraju tijekom izvršavanja. Srž problema je da sintaksno ispravne i lokalno optimalne operacije mogu kaskadirati u globalno nesigurne ili nepovratne promjene stanja. Okviri zaštitnih ograda poput AgentSentinela pružaju cjelovito sigurnosno praćenje u stvarnom vremenu. Čuvarski agent (engl. <em>guardian agent</em>) je sekundarni LLM fokusiran na sigurnost koji promatra akcije primarnog agenta. Provjediva primjena politika putem okvira osigurava da ponašanje agenta ostaje unutar formalno definiranih granica.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Za vašu profesionalnu praksu: Kodni LLM-ovi su nesigurni po pretpostavci. Njihovo treniranje na javnim repozitorijima, gdje je manjkav kod sveprisutan, predisponira ih da slijede put najmanjeg otpora. Sigurnost postaje vanjski cilj koji se natječe s primarnim ciljem modela. Kada koristite alate za generiranje koda, ne pitajte samo radi li kod. Pitajte je li siguran. Ta dva pitanja nisu isto.</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sec-recepti" class="level1">
+<h1>Recepti za treniranje</h1>
+<p>Zamislite da želite ispeći savršeni kruh. Ne bilo kakav kruh, nego onakav kakav peče majstor pekar koji je proveo trideset godina usavršavajući svoj zanat. Trebat će vam recept, ali ne samo popis sastojaka, nego i precizne temperature, vremena miješanja, opis teksture tijesta u svakoj fazi. Upravo to ovaj odjeljak nastoji pružiti za treniranje kodnih LLM-ova. Treniranje vrhunskog kodnog LLM-a sofisticiran je i višefazni cjevovod u kojem svaka faza služi zasebnim svrhama.</p>
+<p>Proces tipično počinje pretreniranjem, gdje LLM uči temeljne statističke obrasce programskih jezika iz golemih baza koda. Nakon pretreniranja, model prolazi nadzirano fino ugađanje (SFT) za prilagodbu općih sposobnosti. Na kraju, model se može dodatno usavršiti korištenjem pojačanog učenja (RL).</p>
+<section id="sec-distribuirani-okviri" class="level2">
+<h2 class="anchored" data-anchor-id="sec-distribuirani-okviri">Distribuirani okviri za treniranje</h2>
+<p>Zamislite da gradite piramidu. Jedan radnik može nositi jedan kamen odjednom i za završetak mu trebaju stoljeća. Sto radnika može nositi sto kamenova odjednom, ali samo ako su savršeno koordinirani. Upravo taj izazov koordinacije stoji iza distribuiranih okvira za treniranje.</p>
+<p><strong>Megatron-LM</strong> <span class="citation" data-cites="shoeybi2020megatron">Shoeybi i ostali (<a href="#ref-shoeybi2020megatron" role="doc-biblioref">2020</a>)</span> uvodi učinkovit pristup paralelizmu modela unutar slojeva koji particionira pojedinačne transformerske slojeve kroz više uređaja. Temeljna inovacija leži u strategiji tenzorskog paralelizma. Ovaj dizajn zahtijeva samo minimalne operacije all-reduce komunikacije. Okvir implementira tri komplementarne tehnike paralelizacije, tenzorski paralelizam, cjevovodni paralelizam s mikrobatch izvršavanjem, i sekvencijski paralelizam.</p>
+<p><strong>DeepSpeed</strong> <span class="citation" data-cites="rajbhandari2020zero">Rajbhandari i ostali (<a href="#ref-rajbhandari2020zero" role="doc-biblioref">2020</a>)</span> se temelji na optimizatoru bez redundancije (engl. <em>Zero Redundancy Optimizer</em> ili ZeRO) koji eliminira memorijske redundancije u podatkovnom paralelnom treniranju. ZeRO-1 particionira stanja optimizatora za 4 puta smanjenje memorije. ZeRO-2 proširuje particioniranje na gradijente postižući 8 puta smanjenje. ZeRO-3 particionira parametre modela omogućujući linearno skaliranje s brojem uređaja.</p>
+<p><strong>PyTorch FSDP</strong> implementira ZeRO-3 optimizaciju kao izvornu PyTorch komponentu. FSDP2 redizajnira implementaciju koristeći DTensor apstrakcije. <strong>TorchTitan</strong> pruža proizvodnu referentnu implementaciju 4D paralelizma za pretreniranje LLM-ova. <strong>Colossal-AI</strong> pruža raznolike strategije paralelizacije s naglaskom na višedimenzionalnom tenzorskom paralelizmu.</p>
+</section>
+<section id="sec-pretreniranje-smjernice" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pretreniranje-smjernice">Smjernice za pretreniranje</h2>
+<p>Pretreniranje predstavlja temeljnu fazu razvoja kodnog LLM-a, gdje modeli stječu fundamentalno programersko znanje iz golemih repozitorija koda. Zakoni skaliranja izvedeni iz opsežnih višejezičnih eksperimenata neprocjenjiv su alat za pružanje smjernica temeljenih na podatcima.</p>
+<p><strong>Jezično specifični zakoni skaliranja.</strong> Programski jezici pokazuju fundamentalno različita ponašanja skaliranja. Interpretirani jezici pokazuju veće eksponente skaliranja od kompiliranih jezika. Python demonstrira najviše vrijednosti eksponenata, ukazujući na agresivne koriti od povećanog kapaciteta modela. Statički tipizirani kompilirani jezici poput Rusta i Goa pokazuju zamjetno manje eksponente, jer njihove krute sintaksne strukture i eksplicitne anotacije tipova nose više informacija po tokenu. Nereducibilni gubitak otkriva intrinzičnu složenost jezika.</p>
+<p><strong>Učinci višejezičnog miješanja.</strong> Sustavni eksperimenti na dvojezičnim mješavinama otkrivaju da višejezično treniranje pruža značajne prednosti nad jednojezičnim polaznim modelima. Jezici koji dijele sličnu sintaksu i semantiku pokazuju snažnu pozitivnu sinergiju. Primjerice, mješavine Java/C# postižu preko 20% smanjenja gubitka. Međutim, Python predstavlja asimetričnu iznimku. Miješanje Pythona s većinom statički tipiziranih jezika proizvodi male negativne učinke.</p>
+<p><strong>Preporučene strategije pretreniranja.</strong> Alociranje budžeta tokena proporcionalno eksponentima skaliranja umjesto uniformno. Jezici s visokim eksponentima značajno profitiraju od povećanih podataka. Prioritiziranje sintaksno sličnih jezičnih parova u mješavinama. Usmjeravanje produljenog treniranja na jezike s visokim nereducibilnim gubitkom. Višejezično pretreniranje trebalo bi biti zadani pristup jer većina jezika pokazuje dosljednu pozitivnu sinergiju.</p>
+</section>
+<section id="sec-sft-smjernice" class="level2">
+<h2 class="anchored" data-anchor-id="sec-sft-smjernice">Smjernice za fino ugađanje</h2>
+<p>Uspostavivši temeljne okvire za pretreniranje velikog razmjera, fokus se pomiče na nadzirano fino ugađanje. Dok pretreniranje gradi opće sposobnosti modela, SFT je ključan za prilagodbu specifičnim, visoko vrijednim zadacima. Ova faza prilagodbe uvodi vlastiti skup izazova i kompromisa.</p>
+<p><strong>Smjernice za okvire treniranja.</strong> Učinkovito SFT kodnih LLM-ova zahtijeva okvire koji balansiraju učinkovitost treniranja i performanse modela. Za SFT velikog razmjera s više epoha, okviri koji kombiniraju particioniranu memoriju s tenzorskim paralelizmom unutar sloja postižu najbolju ravnotežu.</p>
+<p><strong>Smjernice za parametre treniranja.</strong> Globalna veličina serije dominantan je čimbenik osjetljivosti za nadzirani SFT koda. Točnost degradira kada globalna serija premašuje otprilike 256. Optimalne stope učenja ovise o modelu. Duljina treniranja interagira sa skalama. Raspored učenja i zagrijavanje sekundarni su za manje modele ali važniji za veće, gdje je konstantni raspored sa skromnim zagrijavanjem sigurniji.</p>
+<p><strong>Smjernice za izbor skupova podataka.</strong> Sveobuhvatna usporedba javno dostupnih SFT skupova podataka otkriva značajne razlike u performansama kroz modele. Za gusti model, najviše performanse ostvaruju skupovi koji kombiniraju strukturirane programerske zadatke s raznolikim izvorima koda.</p>
+</section>
+<section id="sec-rl-smjernice" class="level2">
+<h2 class="anchored" data-anchor-id="sec-rl-smjernice">Smjernice za pojačano učenje</h2>
+<p>Nadzirano fino ugađanje visoko je učinkovito za podučavanje modela da oponaša distribuciju danog skupa podataka. Međutim, za zadatke poput generiranja koda, ispravnost se ne odnosi samo na stilove nego na objektivne i provjerljive ishode poput prolaska jediničnih testova.</p>
+<p><strong>Validacija estimatora prednosti.</strong> Izbor estimatora prednosti fundamentalan je za stabilnost i učinkovitost uzorkovanja algoritama gradijenata politike. RLOO postiže najbolju Pass@5 izvedbu. Međutim, REINFORCE++ baseline konvergira otprilike 30% brže uz održavanje konkurentne izvedbe, pokazujući stabilniju dinamiku treniranja. REINFORCE++ baseline preporučuje se kao zadani estimator.</p>
+<p><strong>Skaliranje maksimalne duljine odgovora.</strong> Zadaci generiranja koda mogu zahtijevati znatno različite duljine konteksta. Konfiguracija od 16K tokena postiže najvišu Pass@1 ocjenu. Zanimljivo, postavka od 2K tokena postiže najbolju Pass@5 izvedbu. Preporuka je 2K tokena za ciljeve teškog istraživanja, 16K tokena za Pass@1 i 4K tokena kao uravnotežena zadana vrijednost.</p>
+<p><strong>Skaliranje broja uzorkovanja po upitu.</strong> Broj odgovora uzorkovanih po upitu izravno utječe na širinu istraživanja i kvalitetu procjene prednosti. N=8 isporučuje najbolju Pass@5 izvedbu. Za Pass@1, rezultati pokazuju izvanrednu stabilnost. N=16 preporučuje se kao zadana konfiguracija zbog izvrsnog balansa između brzine konvergencije, računalne učinkovitosti i konkurentne izvedbe.</p>
+</section>
+</section>
+<section id="sec-primjena" class="level1">
+<h1>Veliki jezični modeli za kod u primjeni</h1>
+<p>Sve što smo opisali u prethodnih osam poglavlja, od arhitektura modela i zadataka pretreniranja, preko mjerila i evaluacije, usklađivanja, agenata, sigurnosti i recepata za treniranje, kulminira u jednom pitanju. Kako to izgleda u rukama stvarnih programera? Zamislite da ste proveli godine projektirajući motor automobila, testirajući ga u laboratoriju, mjereći svaki parametar do posljednje decimale. Sve to ima smisla samo ako motor na kraju završi pod haubom automobila koji stvarni ljudi voze po stvarnim cestama. Upravo o tome govori ovo poglavlje.</p>
+<section id="sec-ide-helperi" class="level2">
+<h2 class="anchored" data-anchor-id="sec-ide-helperi">Razvojni pomoćnici integrirani u IDE</h2>
+<p>Razvojni pomoćnici integrirani u IDE predstavljaju najšire primijenjenu kategoriju aplikacija kodnih LLM-ova, bešavno ugrađujući AI sposobnosti unutar etabliranih razvojnih okruženja poput Visual Studio Codea, JetBrains IDE-ova i vlasničkih uređivača. Ovi alati ciljaju profesionalne programere koji rade na projektima, naglašavajući duboko kontekstualno razumijevanje, međudatotečno rezoniranje i integraciju s postojećim radnim procesima softverskog inženjerstva.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Alat</th>
+<th>Ključne Karakteristike</th>
+<th>Korisničke Baze</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://github.com/features/copilot"><strong>GitHub Copilot</strong></a></td>
+<td>GPT-4.1 po zadanoj postavci, Claude Opus 4 na Pro+, Edits, Workspace, agentski način</td>
+<td>1.8M+ pretplatnika</td>
+</tr>
+<tr class="even">
+<td><a href="https://cursor.com"><strong>Cursor</strong></a></td>
+<td>Vlastiti Tab model, Composer Mode, Agent Mode, dinamička prioritizacija konteksta</td>
+<td>500M+ ARR za 2 godine</td>
+</tr>
+<tr class="odd">
+<td><strong>TRAE</strong></td>
+<td>Builder/SOLO Mode, CUE značajka, pametno preimenovanje, multimodalni unos</td>
+<td>AI-native IDE</td>
+</tr>
+<tr class="even">
+<td><strong>Tabnine</strong></td>
+<td>Fokus na privatnost, lokalni poslužitelji, permisivna licenciranja</td>
+<td>Sigurnost-usmjereno</td>
+</tr>
+<tr class="odd">
+<td><strong>Windsurf</strong></td>
+<td>Kaskadna arhitektura, duboko razumijevanje baze koda, koordinacija više agenata</td>
+<td>Produkcijsko okruženje</td>
+</tr>
+<tr class="even">
+<td><strong>Cody (Sourcegraph)</strong></td>
+<td>Duboka integracija s pretraživanjem koda, superior dohvat u monorepo strukturama</td>
+<td>Enterprise</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://github.com/features/copilot">GitHub Copilot</a> pojavio se kao pionirski komercijalni AI pomoćnik za kodiranje integriran u IDE, prvotno lansiran u tehničkom pregledu 29. lipnja 2021. Izgrađen na OpenAI-jevom Codex modelu, Copilot je transformirao očekivanja programera od AI potpomognutog programiranja. Do 2025. godine, Copilot prema zadanim postavkama koristi GPT-4.1 kroz razgovor, agentski način i dovršavanje koda. Pro+ i Enterprise razine pružaju pristup graničnim modelima. Arhitektura obuhvaća sofisticirani agentski proces baziran na Node.js-u koji rukuje web zahtjevima, prikupljanjem konteksta i inženjeringom upita za LLM. Ključne inovacije uključuju Copilot Edits za višedatotečno refaktoriranje, Copilot Workspace za razvoj cjelovitih značajki i agentski način rada lansiran u svibnju 2025. Sustav obrađuje približno 150 milijuna prijedloga koda dnevno s zahtjevima latencije ispod jedne sekunde.</p>
+<p><a href="https://cursor.com">Cursor</a> predstavlja strateško preispitivanje AI integracije u razvojna okruženja. Osnovan 2022. godine, lansiran u ožujku 2023. kao fork Visual Studio Codea, Cursor je prešao 500 milijuna dolara godišnjeg ponavljajućeg prihoda unutar samo dvije godine. Cursorova tehnička arhitektura centrirana je na vlastitim inovacijama u upravljanju kontekstom. Tab model pruža dovršavanja ultraniskih latencija ispod jedne sekunde implementirajući sofisticirani mehanizam sinkronizacije. Indeksiranje repozitorija koristi Merkle stabla za učinkovito praćenje promjena datoteka. Sustav podržava kontekstne prozore do 200K tokena kroz dinamičku prioritizaciju konteksta. Composer Mode omogućuje uređivanja kroz čitav projekt na prirodnom jeziku. Agent Mode pruža autonomne sposobnosti kodiranja.</p>
+<p>TRAE predstavlja novu generaciju AI-nativnih integriranih razvojnih okruženja. Proizvod manifestira viziju kroz dva primarna načina, Builder Mode i SOLO Mode. SOLO Mode funkcionira kao sveobuhvatni kontekstni inženjer. CUE značajka podržava automatsko dovršavanje, višelinijska uređivanja i pametno preimenovanje.</p>
+<p><a href="https://tabnine.com">Tabnine</a> se razlikuje fokusom na privatnost, sigurnost i usklađenost s intelektualnim vlasništvom, koristeći isključivo permisivno licencirani kod za treniranje modela i nudeći postavljanje na lokalne poslužitelje. <a href="https://windsurf.com">Windsurf</a> je nastao u studenom 2024. uvodeći kaskadnu arhitekturu za duboko razumijevanje baze koda i koordinaciju više agenata. CodeGeeX prioritizira višejezičnu podršku. <a href="https://sourcegraph.com/cody">Cody od Sourcegrapha</a> integrira se duboko s infrastrukturom pretraživanja koda za superiorniji dohvat konteksta u monorepo strukturama. Bito AI naglašava privatnost s načinima izvanmrežnog rada.</p>
+</section>
+<section id="sec-cloud-platforme" class="level2">
+<h2 class="anchored" data-anchor-id="sec-cloud-platforme">Platforme za kodiranje u oblaku</h2>
+<p>Platforme za kodiranje u oblaku koriste skalabilnu infrastrukturu za pružanje usluga generiranja koda kroz programska sučelja, web sučelja i razvojna okruženja integrirana u oblak. Ovi sustavi ciljaju organizacije kojima je potrebno centralizirano postavljanje, dosljedne sigurnosne politike i duboka integracija s uslugama oblaka, posebno za infrastrukturu kao kod i razvoj aplikacija nativnih za oblak.</p>
+<p><strong>Amazon Q Developer</strong> predstavlja evoluciju Amazon CodeWhisperera. U travnju 2024. AWS je spojio CodeWhisperer u širu obitelj Amazon Q. Sustav se razlikuje dubokom specijalizacijom za AWS usluge, treniran na milijunima internih Amazon repozitorija koda, AWS dokumentaciji i implementacijama usluga. Arhitektura se integrira kroz čitav životni ciklus razvoja, od prijedloga koda u IDE-ovima, kroz sučelja za razgovor u AWS konzoli, do automatskog dovršavanja u naredbenom retku za AWS naredbe.</p>
+<p><strong>Google Cloud Code i Gemini Code Assist</strong> Googleove ponude za kodiranje u oblaku evoluirale su od Google Cloud Codea prema Gemini Code Assist, koristeći najnovije modele iz Gemini obitelji. Sustav se ističe u generiranju GKE konfiguracija, Cloud Run postavljanja i BigQuery SQL-a. Gemini CLI pruža razvoj nativni za terminal s brzim zaključivanjem. <strong>Replit Ghostwriter</strong> je pionir u AI potpomognutom razvoju u pregledniku. <strong>Alibaba Tongyi Lingma</strong> služi kinesko tržište sa specijaliziranom podrškom za kineske programerske kontekste.</p>
+</section>
+<section id="sec-terminal-agenti" class="level2">
+<h2 class="anchored" data-anchor-id="sec-terminal-agenti">Autonomni agenti bazirani na terminalu</h2>
+<p>Agenti bazirani na terminalu djeluju u okruženjima naredbenog retka, pružajući autonomne sposobnosti generiranja koda, modifikacije i upravljanja projektima. Ovi alati privlače programere koji preferiraju radne procese vođene tipkovnicom, inženjere za automatizaciju i istraživače kojima su potrebni skriptabilni, ponovljivi eksperimenti.</p>
+<p><a href="https://aider.chat"><strong>Aider</strong></a> se uspostavlja kao vodeći agentski alat za kodiranje u terminalu otvorenog koda. Njegov sustav mapiranja repozitorija koristi tree-sitter za jezično agnostičko parsiranje apstraktnog sintaksnog stabla. Aider implementira više pozadina za uređivanje koda s automatskim odabirom formata i iterativni mehanizam povratnih informacija iz izvršavanja.</p>
+<p><a href="https://docs.anthropic.com/en/docs/claude-code"><strong>Claude Code,</strong></a> najavljen u prosincu 2024. od strane Anthropica, predstavlja razvojno okruženje nativno za terminal specifično dizajnirano za obitelj modela Claude. Sustav implementira Model Context Protocol (MCP), otvoreni standard koji omogućuje proširivo integriranje alata. Arhitektura naglašava komponabilnost gdje programeri mogu definirati prilagođene alate koje Claude može autonomno pozivati. Sposobnost planiranja agenta razbija složene zadatke u podciljeve s eksplicitnim generiranjem koraka.</p>
+<p><strong>Gemini CLI</strong> pruža pristup Googleovim Gemini modelima nativno za terminal s naglaskom na brzinu i učinkovitost. <strong>Plandex</strong> implementira distinktivan radni proces baziran na planovima s podrškom za grananje za istraživanje alternativnih implementacija.</p>
+</section>
+<section id="sec-popravak-koda" class="level2">
+<h2 class="anchored" data-anchor-id="sec-popravak-koda">Aplikacije za popravak i verifikaciju koda</h2>
+<p>Specijalizirane aplikacije za automatizirano popravljanje grešaka, zakrpavanje ranjivosti i formalnu verifikaciju rješavaju kritične potrebe pouzdanosti softvera. Ovi alati služe sigurnosnim timovima koji provode procjenu ranjivosti, QA inženjerima i istraživačima u formalnim metodama.</p>
+<p><strong>RepairAgent</strong> je pionir u autonomnom uklanjanju grešaka kroz progresiju stroja stanja vođenu hipotezama. Sustav implementira strukturirani pristup popravljanju grešaka u pet faza, lokalizacija greške, generiranje hipoteza, generiranje zakrpe, validacija i iterativno usavršavanje. <strong>AutoSpec</strong> rješava izazovan problem automatske sinteze specifikacija za formalnu verifikaciju. <strong>AlphaRepair</strong> kombinira analizu programa s LLM-ovima za superiornu lokalizaciju grešaka i generiranje zakrpi. <strong>Toggle</strong> izvodi lokalizaciju grešaka na razini tokena.</p>
+</section>
+<section id="sec-pr-pregled" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pr-pregled">Pregled zahtjeva za spajanje i osiguranje kvalitete</h2>
+<p>Pomoćnici za pregled zahtjeva za spajanje (engl. <em>pull request review</em>) automatiziraju procese pregleda koda, pružajući povratne informacije o kvaliteti koda, potencijalnim greškama, sigurnosnim problemima i pridržavanju standarda kodiranja.</p>
+<p><strong>PR-Agent (Qodo-AI)</strong> pojavio se kao vodeći sustav za automatizirani pregled zahtjeva za spajanje otvorenog koda. Sustav se integrira kao korak u CI/CD cjevovodu, automatski se pokrećući pri stvaranju ili ažuriranju zahtjeva za spajanje. PR-Agent koristi više specijaliziranih upita za različite aspekte pregleda, arhitektonski pregled koji analizira strukturalne promjene, sigurnosni pregled, stilski pregled i logički pregled.</p>
+<p><strong>CodeRabbit</strong> pruža automatizirane preglede zahtjeva za spajanje s umetnutim prijedlozima, objašnjenjima koda i komentarima svjesnima konteksta. Sustav se ističe podrškom za dugačke razlike konteksta. <strong>LLM Code Reviewer</strong> pruža jednostavnu GitHub Action integraciju. <strong>Graphite Reviewer</strong> naglašava brzinu i prisjećanje konteksta kroz indeksiranje svjesno repozitorija. <strong>Codedog</strong> nudi višeplatformsku podršku s jakom UI integracijom za kineske razvojne timove.</p>
+<hr>
+<p>Ovdje se zatvara krug čitavog teksta. Krenuli smo od temeljnih modela i njihovih arhitektura, prošli kroz zadatke i mjerila, usklađivanje, agente, sigurnost i recepte za treniranje, i završavamo tamo gdje sve to zapravo živi, u rukama programera koji koriste ove alate svaki dan.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Za vašu profesionalnu praksu, poruka je jasna. Ovi alati nisu budućnost. Oni su sadašnjost. GitHub Copilot obrađuje 150 milijuna prijedloga koda dnevno. Cursor je premašio 500 milijuna dolara godišnjeg prihoda unutar dvije godine. <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>, Gemini CLI i <a href="https://aider.chat">Aider</a> transformiraju terminalske radne procese. PR-Agent i CodeRabbit automatiziraju preglede koda. RepairAgent autonomno popravlja greške. Pitanje više nije hoće li ovi alati promijeniti način na koji radite. Pitanje je jeste li već počeli razumijevati kako rade, što mogu i ne mogu, i kako ih najučinkovitije koristiti. Odgovor na to pitanje određuje vašu profesionalnu relevantnost u godinama koje dolaze.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="reference" class="level1 unnumbered">
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Reference</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-survey2025codefoundation" class="csl-entry" role="listitem">
+BUAA-SKLCCSE, Alibaba, ByteDance, M-A-P, BJTU, OPPO, HKUST (GZ), BUPT, TeleAI, Shanghai AI Lab, Manchester, StepFun, UoS, SCU, CASIA, NJU, Kuaishou, HIT, Huawei Cloud, Tencent, Monash/CSIRO, NTU, ZJU, BIT, Ubiquant, NUS, HNU, PKU, CSU. 2025. <span>„From Code Foundation Models to Agents and Applications: A Comprehensive Survey and Practical Guide to Code Intelligence“</span>. <em>arXiv preprint arXiv:2511.18538v5</em>. <a href="https://arxiv.org/abs/2511.18538">https://arxiv.org/abs/2511.18538</a>.
+</div>
+<div id="ref-chen2021codex" class="csl-entry" role="listitem">
+Chen, Mark, Jerry Tworek, Heewoo Jun, Qiming Yuan, Henrique Ponde de Oliveira Pinto, Jared Kaplan, Harri Edwards, i ostali. 2021. <span>„Evaluating large language models trained on code“</span>. <em>arXiv preprint arXiv:2107.03374</em>. <a href="https://arxiv.org/abs/2107.03374">https://arxiv.org/abs/2107.03374</a>.
+</div>
+<div id="ref-deepseekv3" class="csl-entry" role="listitem">
+DeepSeek-AI. 2024. <span>„DeepSeek-V3 Technical Report“</span>. <em>arXiv preprint arXiv:2412.19437</em>. <a href="https://arxiv.org/abs/2412.19437">https://arxiv.org/abs/2412.19437</a>.
+</div>
+<div id="ref-deepseekr1" class="csl-entry" role="listitem">
+———. 2025. <span>„DeepSeek-R1: Incentivizing reasoning capability in LLMs via reinforcement learning“</span>. <em>arXiv preprint arXiv:2501.12948</em>. <a href="https://arxiv.org/abs/2501.12948">https://arxiv.org/abs/2501.12948</a>.
+</div>
+<div id="ref-feng2020codebert" class="csl-entry" role="listitem">
+Feng, Zhangyin, Daya Guo, Duyu Tang, Nan Duan, Xiaocheng Feng, Ming Gong, Linjun Shou, i ostali. 2020. <span>„CodeBERT: A pre-trained model for programming and natural languages“</span>. <em>arXiv preprint arXiv:2002.08155</em>. <a href="https://arxiv.org/abs/2002.08155">https://arxiv.org/abs/2002.08155</a>.
+</div>
+<div id="ref-gu2024mamba" class="csl-entry" role="listitem">
+Gu, Albert, i Tri Dao. 2024. <span>„Mamba: Linear-time sequence modeling with selective state spaces“</span>. <em>arXiv preprint arXiv:2312.00752</em>. <a href="https://arxiv.org/abs/2312.00752">https://arxiv.org/abs/2312.00752</a>.
+</div>
+<div id="ref-hong2024metagpt" class="csl-entry" role="listitem">
+Hong, Sirui, Mingchen Zhuge, Jonathan Chen, Xiawu Zheng, Yuheng Cheng, Ceyao Zhang, Jinlin Wang, i ostali. 2024. <span>„MetaGPT: Meta programming for a multi-agent collaborative framework“</span>. <em>arXiv preprint arXiv:2308.00352</em>. <a href="https://arxiv.org/abs/2308.00352">https://arxiv.org/abs/2308.00352</a>.
+</div>
+<div id="ref-wang2024qwencoder" class="csl-entry" role="listitem">
+Hui, Binyuan, Jian Yang, Zeyu Cui, Jiaxi Yang, Dayiheng Liu, Lei Zhang, Tianyu Liu, Jiajun Zhang, Bowen Yu, i ostali. 2024. <span>„Qwen2.5-Coder Technical Report“</span>. <em>arXiv preprint arXiv:2409.12186</em>. <a href="https://arxiv.org/abs/2409.12186">https://arxiv.org/abs/2409.12186</a>.
+</div>
+<div id="ref-jimenez2024swebench" class="csl-entry" role="listitem">
+Jimenez, Carlos E, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, i Karthik Narasimhan. 2024. <span>„SWE-bench: Can language models resolve real-world GitHub issues?“</span> <em>arXiv preprint arXiv:2310.06770</em>. <a href="https://arxiv.org/abs/2310.06770">https://arxiv.org/abs/2310.06770</a>.
+</div>
+<div id="ref-li2023starcoder" class="csl-entry" role="listitem">
+Li, Raymond, Loubna Ben Allal, Yangtian Zi, Niklas Muennighoff, Denis Kocetkov, Chenghao Mou, Marc Marone, i ostali. 2023. <span>„StarCoder: may the source be with you!“</span> <em>arXiv preprint arXiv:2305.06161</em>. <a href="https://arxiv.org/abs/2305.06161">https://arxiv.org/abs/2305.06161</a>.
+</div>
+<div id="ref-li2023alphacode" class="csl-entry" role="listitem">
+Li, Yujia, David Choi, Junyoung Chung, Nate Kushman, Julian Schrittwieser, Rémi Leblond, Tom Eccles, i ostali. 2022. <span>„Competition-level code generation with AlphaCode“</span>. <em>Science</em> 378 (6624): 1092–97. <a href="https://doi.org/10.1126/science.abq1158">https://doi.org/10.1126/science.abq1158</a>.
+</div>
+<div id="ref-lozhkov2024starcoder2" class="csl-entry" role="listitem">
+Lozhkov, Anton, Raymond Li, Loubna Ben Allal, Federico Cassano, Joel Lamy-Poirier, Nouamane Tazi, Ao Tang, i ostali. 2024. <span>„StarCoder 2 and The Stack v2: The next generation“</span>. <em>arXiv preprint arXiv:2402.19173</em>. <a href="https://arxiv.org/abs/2402.19173">https://arxiv.org/abs/2402.19173</a>.
+</div>
+<div id="ref-ouyang2022instructgpt" class="csl-entry" role="listitem">
+Ouyang, Long, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, i ostali. 2022. <span>„Training language models to follow instructions with human feedback“</span>. <em>Advances in Neural Information Processing Systems</em> 35. <a href="https://arxiv.org/abs/2203.02155">https://arxiv.org/abs/2203.02155</a>.
+</div>
+<div id="ref-peng2023memgpt" class="csl-entry" role="listitem">
+Peng, Charles, Yuxuan Xia, Yin Wu, i Sarah Zhu. 2023. <span>„MemGPT: Towards LLMs as operating systems“</span>. <em>arXiv preprint arXiv:2310.08560</em>. <a href="https://arxiv.org/abs/2310.08560">https://arxiv.org/abs/2310.08560</a>.
+</div>
+<div id="ref-qian2024chatdev" class="csl-entry" role="listitem">
+Qian, Chen, Wei Liu, Hongzhang Liu, Nuo Chen, Yufan Dang, Jiahao Li, Cheng Yang, i ostali. 2024. <span>„ChatDev: Communicative agents for software development“</span>. <em>arXiv preprint arXiv:2307.07924</em>. <a href="https://arxiv.org/abs/2307.07924">https://arxiv.org/abs/2307.07924</a>.
+</div>
+<div id="ref-rafailov2023dpo" class="csl-entry" role="listitem">
+Rafailov, Rafael, Archit Sharma, Eric Mitchell, Stefano Ermon, Christopher D Manning, i Chelsea Finn. 2023. <span>„Direct preference optimization: Your language model is secretly a reward model“</span>. <em>Advances in Neural Information Processing Systems</em> 36. <a href="https://arxiv.org/abs/2305.18290">https://arxiv.org/abs/2305.18290</a>.
+</div>
+<div id="ref-rajbhandari2020zero" class="csl-entry" role="listitem">
+Rajbhandari, Samyam, Jeff Rasley, Markus N Rabe, i Yuxiong He. 2020. <span>„ZeRO: Memory optimizations toward training trillion parameter models“</span>. <em>arXiv preprint arXiv:1910.02054</em>. <a href="https://arxiv.org/abs/1910.02054">https://arxiv.org/abs/1910.02054</a>.
+</div>
+<div id="ref-schick2023toolformer" class="csl-entry" role="listitem">
+Schick, Timo, Jane Dwivedi-Yu, Roberto Dessı̀, Roberta Raileanu, Maria Lomeli, Eric Hambro, Luke Zettlemoyer, Nicola Cancedda, i Thomas Scialom. 2024. <span>„Toolformer: Language models can teach themselves to use tools“</span>. <em>Advances in Neural Information Processing Systems</em> 36. <a href="https://arxiv.org/abs/2302.04761">https://arxiv.org/abs/2302.04761</a>.
+</div>
+<div id="ref-schulman2017ppo" class="csl-entry" role="listitem">
+Schulman, John, Filip Wolski, Prafulla Dhariwal, Alec Radford, i Oleg Klimov. 2017. <span>„Proximal policy optimization algorithms“</span>. <em>arXiv preprint arXiv:1707.06347</em>. <a href="https://arxiv.org/abs/1707.06347">https://arxiv.org/abs/1707.06347</a>.
+</div>
+<div id="ref-shao2024grpo" class="csl-entry" role="listitem">
+Shao, Zhihong, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Mingchuan Zhang, YK Li, Y Wu, i Daya Guo. 2024. <span>„DeepSeekMath: Pushing the limits of mathematical reasoning in open language models“</span>. <em>arXiv preprint arXiv:2402.03300</em>. <a href="https://arxiv.org/abs/2402.03300">https://arxiv.org/abs/2402.03300</a>.
+</div>
+<div id="ref-shoeybi2020megatron" class="csl-entry" role="listitem">
+Shoeybi, Mohammad, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared Casper, i Bryan Catanzaro. 2020. <span>„Megatron-LM: Training multi-billion parameter language models using model parallelism“</span>. <em>arXiv preprint arXiv:1909.08053</em>. <a href="https://arxiv.org/abs/1909.08053">https://arxiv.org/abs/1909.08053</a>.
+</div>
+<div id="ref-touvron2023llama2" class="csl-entry" role="listitem">
+Touvron, Hugo, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, i ostali. 2023. <span>„Llama 2: Open foundation and fine-tuned chat models“</span>. <em>arXiv preprint arXiv:2307.09288</em>. <a href="https://arxiv.org/abs/2307.09288">https://arxiv.org/abs/2307.09288</a>.
+</div>
+<div id="ref-vaswani2017attention" class="csl-entry" role="listitem">
+Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Lukasz Kaiser, i Illia Polosukhin. 2017. <span>„Attention is all you need“</span>. <em>Advances in Neural Information Processing Systems</em> 30. <a href="https://arxiv.org/abs/1706.03762">https://arxiv.org/abs/1706.03762</a>.
+</div>
+<div id="ref-wang2024voyager" class="csl-entry" role="listitem">
+Wang, Guanzhi, Yuqi Xie, Yunfan Jiang, Ajay Mandlekar, Chaowei Xiao, Yuke Zhu, Linxi Fan, i Anima Anandkumar. 2023. <span>„Voyager: An open-ended embodied agent with large language models“</span>. <em>arXiv preprint arXiv:2305.16291</em>. <a href="https://arxiv.org/abs/2305.16291">https://arxiv.org/abs/2305.16291</a>.
+</div>
+<div id="ref-wang2024openhands" class="csl-entry" role="listitem">
+Wang, Xingyao, Boxuan Hoang, Yufan Hu, Jialu Liu, Yuhang Liu, Fangzhou Liu, Kaiyu Deng, i ostali. 2024. <span>„OpenHands: An open platform for AI software developers as generalist agents“</span>. <em>arXiv preprint arXiv:2407.16741</em>. <a href="https://arxiv.org/abs/2407.16741">https://arxiv.org/abs/2407.16741</a>.
+</div>
+<div id="ref-wei2022cot" class="csl-entry" role="listitem">
+Wei, Jason, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia, Ed Chi, Quoc Le, i Denny Zhou. 2022. <span>„Chain-of-thought prompting elicits reasoning in large language models“</span>. <em>Advances in Neural Information Processing Systems</em> 35. <a href="https://arxiv.org/abs/2201.11903">https://arxiv.org/abs/2201.11903</a>.
+</div>
+<div id="ref-yang2024sweagent" class="csl-entry" role="listitem">
+Yang, John, Carlos E Jimenez, Alexander Wettig, Kilian Lieret, Shunyu Yao, Karthik Narasimhan, i Ofir Press. 2024. <span>„SWE-agent: Agent-computer interfaces enable automated software engineering“</span>. <em>arXiv preprint arXiv:2405.15793</em>. <a href="https://arxiv.org/abs/2405.15793">https://arxiv.org/abs/2405.15793</a>.
+</div>
+<div id="ref-yao2023react" class="csl-entry" role="listitem">
+Yao, Shunyu, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, i Yuan Cao. 2023. <span>„ReAct: Synergizing reasoning and acting in language models“</span>. <em>arXiv preprint arXiv:2210.03629</em>. <a href="https://arxiv.org/abs/2210.03629">https://arxiv.org/abs/2210.03629</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
