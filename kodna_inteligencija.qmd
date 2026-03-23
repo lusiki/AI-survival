@@ -1,7 +1,7 @@
 ---
 title: "Strojevi Koji Pišu Kod"
 subtitle: "Od modela do agenata i primjene"
-author: "Inženjerska zajednica za softversku inteligenciju"
+author: "Lux Data Boutique"
 date: "`r Sys.Date()`"
 format:
   html:
